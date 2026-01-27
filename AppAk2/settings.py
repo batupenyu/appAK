@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config
+import dj_database_url  # Add this import for Vercel database support
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,10 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-)))w*k!ve%=n*ck9+=$!45#26@b4+=2+si_jtw5asj-)=8_8-j')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
-
+# Update ALLOWED_HOSTS for Vercel deployment
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.vercel.app',  # Allow all Vercel domains
+    '.now.sh',      # Legacy Vercel domain pattern
+]
 
 # Application definition
 
@@ -44,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -108,7 +115,7 @@ try:
                 #     'sslrootcert': os.path.join(BASE_DIR, 'ssl', 'prod-ca-2021.crt'),
                 },
             }
-        # }
+        }
         # Add SSL certificate path if specified
         if config('DB_SSL_CERT_PATH', default=''):
             DATABASES['default']['OPTIONS']['sslcert'] = config('DB_SSL_CERT_PATH')
@@ -133,6 +140,14 @@ except UndefinedValueError:
     }
     print("Warning: Supabase credentials not found or incomplete. Using SQLite for now.")
     print("To use Supabase, please fill in your credentials in the .env file.")
+
+# For Vercel deployment, allow DATABASE_URL environment variable
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 
 
 # Password validation
@@ -169,27 +184,23 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Collect static files here
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Changed to work with Vercel
 
+# Enable WhiteNoise for serving static files on Vercel
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files (user uploads)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'mediafiles' # Store user-uploaded media here
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')  # Store user-uploaded media here
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Di bagian ALLOWED_HOSTS
-ALLOWED_HOSTS = []
-
-# Tambahkan ini untuk otomatis menangani domain ngrok
-if os.environ.get('ENVIRONMENT') != 'production':
-    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
-    # Izinkan semua subdomain ngrok-free.dev
-    ALLOWED_HOSTS.append('.ngrok-free.dev')
-
-    CSRF_TRUSTED_ORIGINS = [
-    'https://nonidiomatical-teetotally-camron.ngrok-free.dev',
-    # tambahkan domain lain jika diperlukan
+# CSRF settings for Vercel
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.now.sh',
 ]
