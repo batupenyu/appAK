@@ -1,0 +1,91 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Angka Kredit{% else %}Tambah Angka Kredit{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>{% if form.instance.pk %}Edit Angka Kredit{% else %}Tambah Angka Kredit{% endif %}</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.pegawai.id_for_label }}" class="form-label">{{ form.pegawai.label }}</label>
+                    {{ form.pegawai }}
+                    {% if form.pegawai.help_text %}<div class="form-text">{{ form.pegawai.help_text }}</div>{% endif %}
+                    {% for error in form.pegawai.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.instansi.id_for_label }}" class="form-label">{{ form.instansi.label }}</label>
+                    {{ form.instansi }}
+                    {% if form.instansi.help_text %}<div class="form-text">{{ form.instansi.help_text }}</div>{% endif %}
+                    {% for error in form.instansi.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.penilai.id_for_label }}" class="form-label">{{ form.penilai.label }}</label>
+                    {{ form.penilai }}
+                    {% if form.penilai.help_text %}<div class="form-text">{{ form.penilai.help_text }}</div>{% endif %}
+                    {% for error in form.penilai.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.jenjang.id_for_label }}" class="form-label">{{ form.jenjang.label }}</label>
+                    {{ form.jenjang }}
+                    {% if form.jenjang.help_text %}<div class="form-text">{{ form.jenjang.help_text }}</div>{% endif %}
+                    {% for error in form.jenjang.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.tanggal_awal_penilaian.id_for_label }}" class="form-label">{{ form.tanggal_awal_penilaian.label }}</label>
+                    {{ form.tanggal_awal_penilaian }}
+                    {% if form.tanggal_awal_penilaian.help_text %}<div class="form-text">{{ form.tanggal_awal_penilaian.help_text }}</div>{% endif %}
+                    {% for error in form.tanggal_awal_penilaian.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.tanggal_akhir_penilaian.id_for_label }}" class="form-label">{{ form.tanggal_akhir_penilaian.label }}</label>
+                    {{ form.tanggal_akhir_penilaian }}
+                    {% if form.tanggal_akhir_penilaian.help_text %}<div class="form-text">{{ form.tanggal_akhir_penilaian.help_text }}</div>{% endif %}
+                    {% for error in form.tanggal_akhir_penilaian.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="{{ form.penilaian.id_for_label }}" class="form-label">{{ form.penilaian.label }}</label>
+                    {{ form.penilaian }}
+                    {% if form.penilaian.help_text %}<div class="form-text">{{ form.penilaian.help_text }}</div>{% endif %}
+                    {% for error in form.penilaian.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+            
+
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.tanggal_ditetapkan.id_for_label }}" class="form-label">{{ form.tanggal_ditetapkan.label }}</label>
+                    {{ form.tanggal_ditetapkan }}
+                    {% if form.tanggal_ditetapkan.help_text %}<div class="form-text">{{ form.tanggal_ditetapkan.help_text }}</div>{% endif %}
+                    {% for error in form.tanggal_ditetapkan.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="{{ form.tempat_ditetapkan.id_for_label }}" class="form-label">{{ form.tempat_ditetapkan.label }}</label>
+                    {{ form.tempat_ditetapkan }}
+                    {% if form.tempat_ditetapkan.help_text %}<div class="form-text">{{ form.tempat_ditetapkan.help_text }}</div>{% endif %}
+                    {% for error in form.tempat_ditetapkan.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{% url 'ak_list' %}" class="btn btn-secondary">Batal</a>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

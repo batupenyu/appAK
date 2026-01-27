@@ -1,0 +1,131 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Pegawai{% else %}Tambah Pegawai{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>{% if form.instance.pk %}Edit Pegawai{% else %}Tambah Pegawai{% endif %}</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Data Pribadi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.nama.id_for_label }}" class="form-label">{{ form.nama.label }}</label>
+                            {{ form.nama }}
+                            {% if form.nama.help_text %}<div class="form-text">{{ form.nama.help_text }}</div>{% endif %}
+                            {% for error in form.nama.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.nip.id_for_label }}" class="form-label">{{ form.nip.label }}</label>
+                            {{ form.nip }}
+                            {% if form.nip.help_text %}<div class="form-text">{{ form.nip.help_text }}</div>{% endif %}
+                            {% for error in form.nip.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.no_seri_karpeg.id_for_label }}" class="form-label">{{ form.no_seri_karpeg.label }}</label>
+                            {{ form.no_seri_karpeg }}
+                            {% if form.no_seri_karpeg.help_text %}<div class="form-text">{{ form.no_seri_karpeg.help_text }}</div>{% endif %}
+                            {% for error in form.no_seri_karpeg.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.tempat_lahir.id_for_label }}" class="form-label">{{ form.tempat_lahir.label }}</label>
+                            {{ form.tempat_lahir }}
+                            {% if form.tempat_lahir.help_text %}<div class="form-text">{{ form.tempat_lahir.help_text }}</div>{% endif %}
+                            {% for error in form.tempat_lahir.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.tanggal_lahir.id_for_label }}" class="form-label">{{ form.tanggal_lahir.label }}</label>
+                            {{ form.tanggal_lahir }}
+                            {% if form.tanggal_lahir.help_text %}<div class="form-text">{{ form.tanggal_lahir.help_text }}</div>{% endif %}
+                            {% for error in form.tanggal_lahir.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.jenis_kelamin.id_for_label }}" class="form-label">{{ form.jenis_kelamin.label }}</label>
+                            {{ form.jenis_kelamin }}
+                            {% if form.jenis_kelamin.help_text %}<div class="form-text">{{ form.jenis_kelamin.help_text }}</div>{% endif %}
+                            {% for error in form.jenis_kelamin.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informasi Pangkat</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.pangkat.id_for_label }}" class="form-label">{{ form.pangkat.label }}</label>
+                            {{ form.pangkat }}
+                            {% if form.pangkat.help_text %}<div class="form-text">{{ form.pangkat.help_text }}</div>{% endif %}
+                            {% for error in form.pangkat.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.golongan.id_for_label }}" class="form-label">{{ form.golongan.label }}</label>
+                            {{ form.golongan }}
+                            {% if form.golongan.help_text %}<div class="form-text">{{ form.golongan.help_text }}</div>{% endif %}
+                            {% for error in form.golongan.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.tmt_pangkat.id_for_label }}" class="form-label">{{ form.tmt_pangkat.label }}</label>
+                            {{ form.tmt_pangkat }}
+                            {% if form.tmt_pangkat.help_text %}<div class="form-text">{{ form.tmt_pangkat.help_text }}</div>{% endif %}
+                            {% for error in form.tmt_pangkat.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informasi Jabatan</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.jabatan.id_for_label }}" class="form-label">{{ form.jabatan.label }}</label>
+                            {{ form.jabatan }}
+                            {% if form.jabatan.help_text %}<div class="form-text">{{ form.jabatan.help_text }}</div>{% endif %}
+                            {% for error in form.jabatan.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.tmt_jabatan.id_for_label }}" class="form-label">{{ form.tmt_jabatan.label }}</label>
+                            {{ form.tmt_jabatan }}
+                            {% if form.tmt_jabatan.help_text %}<div class="form-text">{{ form.tmt_jabatan.help_text }}</div>{% endif %}
+                            {% for error in form.tmt_jabatan.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.unit_kerja.id_for_label }}" class="form-label">{{ form.unit_kerja.label }}</label>
+                            {{ form.unit_kerja }}
+                            {% if form.unit_kerja.help_text %}<div class="form-text">{{ form.unit_kerja.help_text }}</div>{% endif %}
+                            {% for error in form.unit_kerja.errors %}<div class="alert alert-danger">{{ error }}</div>{% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="{% url 'pegawai_list' %}" class="btn btn-secondary">Batal</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

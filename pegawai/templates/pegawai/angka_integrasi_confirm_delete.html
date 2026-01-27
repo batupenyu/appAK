@@ -1,0 +1,13 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}Hapus Angka Integrasi{% endblock %}
+
+{% block content %}
+    <h1>Hapus Angka Integrasi</h1>
+    <p>Anda yakin ingin menghapus angka integrasi untuk "{{ object.pegawai }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Hapus</button>
+        <a href="{% url 'angka_integrasi_list' %}" class="btn btn-secondary">Batal</a>
+    </form>
+{% endblock %}

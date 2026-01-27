@@ -1,0 +1,1 @@
+masukkkan map ini untuk perhitungan kolom lama pada penetapan jika golongan saat ini == III/a kolom lama = 0 kolom baru dikurangi 0, jika golongan saat ini == III/b kolom lama = 50 kolom baru dikurangi 50, jika golongan saat ini == III/c kolom lama = 0 kolom baru dikurangi 0,jika golongan saat ini == III/d kolom lama = 100 kolom baru dikurangi 100,

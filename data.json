@@ -1,0 +1,34 @@
+[
+    {
+        "year": "2023",
+        "period": "Jan-Jun",
+        "predikat": "Baik",
+        "prosentase": 100,
+        "koefisien": 12.5,
+        "angkaKredit": 6.25
+    },
+    {
+        "year": "2023",
+        "period": "Jul-Des",
+        "predikat": "Sangat Baik",
+        "prosentase": 120,
+        "koefisien": 12.5,
+        "angkaKredit": 7.50
+    },
+    {
+        "year": "2024",
+        "period": "Jan-Jun",
+        "predikat": "Baik",
+        "prosentase": 100,
+        "koefisien": 12.5,
+        "angkaKredit": 6.25
+    },
+    {
+        "year": "2024",
+        "period": "Jul-Des",
+        "predikat": "Cukup",
+        "prosentase": 80,
+        "koefisien": 12.5,
+        "angkaKredit": 5.00
+    }
+]

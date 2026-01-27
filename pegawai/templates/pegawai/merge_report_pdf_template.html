@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      #report-content {
+        font-size: 11pt;
+        font-family: Arial, sans-serif;
+        line-height: 1.2;
+      }
+      .font-bold {
+        font-weight: bold;
+      }
+
+      table.personal-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 16px;
+      }
+
+      /* Header: 2 kolom visual, tapi struktur 4 kolom */
+      table.personal-table thead th {
+        border: 1px solid black;
+        border-bottom: 2px solid black;
+        padding: 2px 4px;
+        text-align: center;
+        vertical-align: middle;
+        font-weight: bold;
+      }
+
+      /* Body cells: default horizontal borders */
+      table.personal-table tbody td {
+        padding: 2px 4px;
+        vertical-align: middle;
+        text-align: left;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+      }
+
+      /* Kolom nomor: border kiri, KANAN, atas, bawah */
+      table.personal-table tbody td.number-cell {
+        width: 5%;
+        text-align: center;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+      }
+
+      /* Kolom label: HILANGKAN border kanan */
+      table.personal-table tbody td.label-cell {
+        width: 30%;
+        border-right: none;
+      }
+
+      /* Kolom colon: HILANGKAN border kiri & kanan */
+      table.personal-table tbody td.colon-merged {
+        width: 2%;
+        text-align: center;
+        padding: 2px 2px;
+        border-left: none;
+        border-right: none;
+      }
+
+      /* Kolom nilai: HILANGKAN border kiri, TAPI pertahankan border kanan */
+      table.personal-table tbody td.value-cell {
+        width: 63%;
+        border-left: none;
+        border-right: 1px solid black;
+      }
+
+      /* Tabel angka kredit — tetap full border */
+      table.credit-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 16px;
+      }
+      table.credit-table th,
+      table.credit-table td {
+        border: 1px solid black;
+        padding: 2px 4px;
+        vertical-align: middle;
+        text-align: center;
+      }
+      table.credit-table thead tr:first-child th {
+        border-bottom: 2px solid black;
+      }
+
+      /* Footer */
+      table.footer-table {
+        width: 100%;
+        border: none;
+        border-collapse: collapse;
+      }
+      .footer-left {
+        width: 60%;
+      }
+      .footer-right {
+        width: 40%;
+      }
+      .footer-right-content {
+        text-align: left;
+      }
+
+      /* Hide Font Awesome icons in PDF */
+      @media print {
+          .fa, .fas, .far, .fal, .fad, .fab {
+              display: none !important;
+          }
+      }
+
+      /* Page break settings */
+      @page {
+        margin: 1cm;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #konversi-section,
+      #akumulasi-section,
+      #penetapan-section {
+        page-break-after: always;
+      }
+
+      /* Remove the last page break */
+      #penetapan-section {
+        page-break-after: avoid;
+      }
+
+      /* Ensure consistent spacing between sections */
+      #konversi-section,
+      #akumulasi-section,
+      #penetapan-section {
+        margin-bottom: 20px;
+      }
+
+      /* Specific table styling to ensure original formatting is preserved */
+      table.personal-table,
+      table.personal-table th,
+      table.personal-table td {
+        border: 1px solid black !important;
+      }
+
+      /* Set specific width for colon column in personal table */
+      table.personal-table .colon-merged {
+        width: 30px !important;
+      }
+
+      table.credit-table,
+      table.credit-table th,
+      table.credit-table td {
+        border: 1px solid black !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="report-content">
+      <!-- Konversi Report -->
+      {% with report_data=report_data.konversi.report_data
+      ak_list=report_data.konversi.ak_list %}
+      <div id="konversi-section">
+        {% include 'pegawai/konversi_report_template.html' %}
+      </div>
+      {% endwith %}
+
+      <!-- Akumulasi Report -->
+      {% with report_data=report_data.akumulasi
+      ak_list=report_data.akumulasi.ak_list %}
+      <div id="akumulasi-section">
+        {% include 'pegawai/akumulasi_report_template.html' %}
+      </div>
+      {% endwith %}
+
+      <!-- Penetapan Report -->
+      {% with report_data=report_data.penetapan
+      ak_list=report_data.penetapan.ak_list %}
+      <div id="penetapan-section">
+        {% include 'pegawai/penetapan_report_template.html' %}
+      </div>
+      {% endwith %}
+    </div>
+  </body>
+</html>

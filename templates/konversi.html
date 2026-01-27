@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konversi Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        th,
+        td {
+            border: 1px solid #0e0101;
+            padding: 2px;
+            text-align: left;
+        }
+
+        th {
+            background-color: none;
+            color: black;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .label {
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+        }
+
+        .colon {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .value {
+            display: inline-block;
+        }
+
+        .inline-container {
+            white-space: nowrap;
+            margin: 0;
+            padding: 0;
+        }
+
+        .left-align,
+        .right-align {
+            display: inline-block;
+            width: 49%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .left-align {
+            text-align: left;
+        }
+
+        .right-align {
+            text-align: right;
+        }
+    </style>
+</head>
+{% if pegawai_options %}
+<!-- Employee selection form -->
+<div style="text-align: center; margin: 20px;">
+    <h2>Pilih Pegawai untuk Laporan Konversi</h2>
+    <form method="POST" action="{{ url_for('report_konversi') }}">
+        <select name="pegawai_id" required>
+            <option value="">-- Pilih Pegawai --</option>
+            {% for pegawai in pegawai_options %}
+            <option value="{{ pegawai.id }}">{{ pegawai.nama }} - {{ pegawai.nip }}</option>
+            {% endfor %}
+        </select>
+    <a href="#" class="btn btn-primary" onclick="alert('PDF generation not available')">Cetak PDF</a>
+    <button type="submit">Generate Report</button>
+    </form>
+</div>
+{% else %}
+<!-- Report content -->
+<body>
+    <div style="text-align: center; margin: 20px;">
+        <a href="{{ url_for('report_konversi_pdf', pegawai_id=akKredit.pegawai.id) }}" class="btn btn-primary">Download PDF</a>
+    </div>
+    <p style="text-align: center; margin: 0; padding: 0;">
+        <b>
+            KONVERSI PREDIKAT KINERJA KE ANGKA KREDIT<br>
+            NOMOR : {{ report_number }}
+        </b>
+    </p>
+    <br>
+    <br>
+    <br>
+    <div class="inline-container">
+        <div class="left-align">
+            Instansi : {{ atasanInstansi }}
+        </div>
+        <div class="right-align">
+            Periode : {{ akKredit.startDate }} s.d. {{ akKredit.endDate }}
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: center">I.</th>
+                <th colspan="2">KETERANGAN PERORANGAN</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="width: 20px; text-align: center">1.</td>
+                <td colspan="2">
+                    <span class="label">Nama</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredit.pegawai.nama }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">2.</td>
+                <td colspan="2">
+                    <span class="label">NIP</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredit.pegawai.nip }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">3.</td>
+                <td colspan="2">
+                    <span class="label">No. Seri Karpeg</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredit.pegawai.no_karpeg }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">4.</td>
+                <td colspan="2">
+                    <span class="label">Tempat Tgl. Lahir</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredit.pegawai.tempat_lahir }}, {{ akKredit.pegawai.tgl_lahir }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">5.</td>
+                <td colspan="2">
+                    <span class="label">Jenis Kelamin</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredit.pegawai.jenis_kelamin }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">6.</td>
+                <td colspan="2">
+                    <span class="label">Pangkat/Golongan ruang/TMT</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ namaPangkat }}, {{ akKredit.pegawai.pangkat }}, {{ akKredit.pegawai.tgl_tmt_pangkat }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">7.</td>
+                <td colspan="2">
+                    <span class="label">Jabatan /TMT</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredit.pegawai.jabatan }}/{{ akKredit.pegawai.tgl_tmt_jabatan }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">8.</td>
+                <td colspan="2">
+                    <span class="label">Unit Kerja</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ penilai.unitkerja }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">9.</td>
+                <td colspan="2">
+                    <span class="label">Instansi</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ penilai.instansi }}</span>
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: center; border-bottom: none;" colspan="3">KONVERSI PREDIKAT KINERJA KE ANGKA KREDIT</th>
+        </tbody>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: center" colspan="2">HASIL PENILAIAN KINERJA</th>
+                <th style="text-align: center" rowspan="2">KOEFISIEN <br>PER TAHUN</th>
+                <th style="text-align: center">ANGKA KREDIT <br>YANG DI DAPAT</th>
+            </tr>
+            <tr>
+                <th style="text-align: center">PREDIKAT</th>
+                <th style="text-align: center">PROSENTASE</th>
+                <th style="text-align: center">(KOLOM 2 X KOLOM 2)</th>
+            </tr>
+            <tr>
+                <th style="text-align: center">1</th>
+                <th style="text-align: center">2</th>
+                <th style="text-align: center">3</th>
+                <th style="text-align: center">4</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center">{{ akKredit.predikat }}</td>
+                <td style="text-align: center">{{ prosentase }}</td>
+                <td style="text-align: center">{{ koefisien }}</td>
+                <td style="text-align: center">{{ totalAkKredit }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <br>
+    <p style="padding-left:450px">
+        Ditetapkan di {{ 'Koba' if akKredit.pegawai.nip != penilai.nip else 'Pangkalpinang' }} <br>
+        Pada tanggal, {{ date.strftime('%d-%m-%Y') }}. <br><br>
+        Pejabat Penilai Kinerja <br><br><br><br>
+        {% if akKredit.pegawai.nip != penilai.nip %}
+        {{ penilai.nama }} <br>
+        NIP.{{ penilai.nip }}
+        {% else %}
+        {{ kpa.nama }} <br>
+        NIP. {{ kpa.nip }}
+        {% endif %}
+    </p>
+    <br><br>
+    <p>
+        Tembusan disampaikan kepada: <br>
+        1. Jabatan Fungsional yang bersangkutan <br>
+        2. Ketua/atasan unit kerja <br>
+        3. Kepala Biro Kepegawaian dan Organisasi <br>
+        4. Pejabat lain yang dianggap perlu.
+    </p>
+</body>
+{% endif %}
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penetapan Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10pt;
+            margin: 0;
+            padding: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 2px;
+            text-align: left;
+        }
+
+        th {
+            background-color: none;
+            color: rgb(10, 1, 1);
+        }
+
+        tr:nth-child(even) {
+            background-color: none;
+        }
+
+        .label {
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+        }
+
+        .colon {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .value {
+            display: inline-block;
+        }
+
+        .inline-container {
+            white-space: nowrap;
+            margin: 0;
+            padding: 0;
+        }
+
+        .left-align,
+        .right-align {
+            display: inline-block;
+            width: 49%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .left-align {
+            text-align: left;
+        }
+
+        .right-align {
+            text-align: right;
+        }
+    </style>
+</head>
+{% if pegawai_options %}
+<!-- Employee selection form -->
+<div style="text-align: center; margin: 20px;">
+    <h2>Pilih Pegawai untuk Laporan Penetapan</h2>
+    <form method="POST" action="{{ url_for('report_penetapan') }}">
+        <select name="pegawai_id" required>
+            <option value="">-- Pilih Pegawai --</option>
+            {% for pegawai in pegawai_options %}
+            <option value="{{ pegawai.id }}">{{ pegawai.nama }} - {{ pegawai.nip }}</option>
+            {% endfor %}
+        </select>
+    {% if pegawai_options %}
+    <a href="{{ url_for('report_penetapan_pdf', pegawai_id=pegawai_options[0].id) }}" class="btn btn-primary">Cetak PDF</a>
+    {% endif %}
+    <button type="submit">Generate Report</button>
+    </form>
+</div>
+{% else %}
+<!-- Report content -->
+<body>
+    <div style="text-align: center; margin: 20px;">
+        <a href="{{ url_for('report_penetapan_pdf', pegawai_id=akKredits_first.pegawai.id) }}" class="btn btn-primary">Download PDF</a>
+    </div>
+    <p style="text-align: center; margin: 0; padding: 0;">
+        <b>
+            PENETAPAN ANGKA KREDIT<br>
+            NOMOR : {{ report_number }}
+        </b>
+    </p>
+    <br>
+    <br>
+    <br>
+    <div class="inline-container">
+        <div class="left-align">
+            Instansi : {{ atasanInstansi }}
+        </div>
+        <div class="right-align">
+            Periode : {{ tgl_awal }} s.d. {{ akKredits_first.endDate }}
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: center">I.</th>
+                <th colspan="2">KETERANGAN PERORANGAN</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="width: 20px; text-align: center">1.</td>
+                <td colspan="2">
+                    <span class="label">Nama</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredits_first.pegawai.nama }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">2.</td>
+                <td colspan="2">
+                    <span class="label">NIP</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredits_first.pegawai.nip }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">3.</td>
+                <td colspan="2">
+                    <span class="label">No. Seri Karpeg</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredits_first.pegawai.no_karpeg }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">4.</td>
+                <td colspan="2">
+                    <span class="label">Tempat Tgl. Lahir</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredits_first.pegawai.tempat_lahir }}, {{ akKredits_first.pegawai.tgl_lahir }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">5.</td>
+                <td colspan="2">
+                    <span class="label">Jenis Kelamin</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredits_first.pegawai.jenis_kelamin }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">6.</td>
+                <td colspan="2">
+                    <span class="label">Pangkat/Golongan ruang/TMT</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ namaPangkat }}, {{ akKredits_first.pegawai.pangkat }}, {{ akKredits_first.pegawai.tgl_tmt_pangkat }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">7.</td>
+                <td colspan="2">
+                    <span class="label">Jabatan /TMT</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ akKredits_first.pegawai.jabatan }}/{{ akKredits_first.pegawai.tgl_tmt_jabatan }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">8.</td>
+                <td colspan="2">
+                    <span class="label">Unit Kerja</span>
+                    <span class="colon">:</span>
+                    <span class="value">{{ penilai.unitkerja }}</span>
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: center; border-bottom: none;" colspan="3">HASIL PENILAIAN ANGKA KREDIT</th>
+            </tr>
+        </tbody>
+    </table>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: center; width:20px; vertical-align: middle;">II.</th>
+                <th style="text-align: center; vertical-align: middle;">PENETAPAN ANGKA KREDIT</th>
+                <th style="text-align: center; vertical-align: middle;">LAMA</th>
+                <th style="text-align: center; vertical-align: middle;">BARU</th>
+                <th style="text-align: center; vertical-align: middle;">JUMLAH</th>
+                <th style="text-align: center; vertical-align: middle;">KETERANGAN</th>
+            </tr>
+            <tr>
+                <th style="text-align: center">1</th>
+                <th style="text-align: center">2</th>
+                <th style="text-align: center">3</th>
+                <th style="text-align: center">4</th>
+                <th style="text-align: center">5</th>
+                <th style="text-align: center">6</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="text-align: center">1.</td>
+                <td>AK dasar yang diberikan</td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+            </tr>
+            {% for ak in akKredits %}
+            <tr>
+                <td style="text-align: center">{{ loop.index + 1 }}.</td>
+                <td>AK konversi dari predikat {{ ak.predikat }} periode {{ ak.startDate }} - {{ ak.endDate }}</td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center">{{ "%.3f"|format(ak.jumlah_angka_kredit) }}</td>
+                <td style="text-align: center">{{ "%.3f"|format(ak.jumlah_angka_kredit) }}</td>
+                <td style="text-align: center"></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td style="text-align: center">{{ loop.index + 2 }}.</td>
+                <td>AK penyesuaian penyetaraan</td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+            </tr>
+            <tr>
+                <td style="text-align: center">{{ loop.index + 3 }}.</td>
+                <td>AK yang diperoleh dari peningkatan pendidikan</td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+                <td style="text-align: center"></td>
+            </tr>
+            <tr>
+                <td style="text-align: center">{{ loop.index + 4 }}.</td>
+                <td>-</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: center">-</td>
+                <td style="text-align: center">-</td>
+            </tr>
+            <tr>
+                <td style="text-align: center">{{ loop.index + 5 }}.</td>
+                <td>JUMLAH</td>
+                <td style="text-align: center">{{ "%.3f"|format(lama) }}</td>
+                <td style="text-align: center">{{ "%.3f"|format(baru) }}</td>
+                <td style="text-align: center">{{ "%.3f"|format(lama + baru) }}</td>
+                <td style="text-align: center"></td>
+            </tr>
+        </tbody>
+        <thead>
+            <tr>
+                <th colspan="6" style="text-align: center">KONVERSI PREDIKAT KINERJA KE ANGKA KREDIT</th>
+            </tr>
+            <tr>
+                <th colspan="2" style="text-align: center">Keterangan</th>
+                <th colspan="2" style="text-align: center">Pangkat</th>
+                <th colspan="2" style="text-align: center">Jenjang Jabatan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="2" style="width: 250px">Angka Kredit minimal yang harus dipenuhi untuk kenaikan pangkat / jenjang</td>
+                <td colspan="2" style="text-align: center">{{ "%.3f"|format(pangkat) }}</td>
+                <td colspan="2" style="text-align: center">{{ "%.3f"|format(jenjang) }}</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    {% if hasilPangkat > 0 %}
+                    Kelebihan/<del>Kekurangan</del> *) Angka Kredit yang harus dicapai untuk kenaikan pangkat
+                    {% else %}
+                    <del>Kelebihan</del>/Kekurangan *) Angka Kredit yang harus dicapai untuk kenaikan pangkat
+                    {% endif %}
+                </td>
+                <td colspan="2" style="text-align: center">{{ "%.3f"|format(hasilPangkat) }}</td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    {% if hasilJenjang > 0 %}
+                    Kelebihan/<del>Kekurangan</del> *) Angka Kredit yang harus dicapai untuk kenaikan jenjang
+                    {% else %}
+                    <del>Kelebihan</del>/Kekurangan *) Angka Kredit yang harus dicapai untuk kenaikan jenjang
+                    {% endif %}
+                </td>
+                <td colspan="2"></td>
+                <td colspan="2" style="text-align: center">{{ "%.3f"|format(hasilJenjang) }}</td>
+            </tr>
+            <tr>
+                <td colspan="6" style="text-align: justify">
+                    {% if hasilPangkat > 0 %}
+                    <b><i>Dapat</i></b>
+                    {% else %}
+                    <b><i>Tidak dapat</i></b>
+                    {% endif %}
+                    dipertimbangkan untuk kenaikan Pangkat/Jabatan setingkat lebih tinggi ke
+                    <b><i>{{ nextPangkat }}</i></b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <table>
+        <tr>
+            <td style="border: none;width:65%">
+                ASLI disampaikan dengan hormat kepada: <br>
+                Jabatan Fungsional yang bersangkutan. <br><br>
+                Tembusan disampaikan kepada: <br>
+                1. Pimpinan Unit Kerja; <br>
+                2. Pejabat Penilai Kinerja;<br>
+                3. Sekretaris Tim Penilai yang bersangkutan; dan <br>
+                4. Kepala Biro Kepegawaian dan Organisasi.
+            </td>
+            <td style="border: none;">
+                Ditetapkan di {{ 'Koba' if akKredits_first.pegawai.nip != penilai.nip else 'Pangkalpinang' }} <br>
+                Pada tanggal, {{ date.strftime('%d-%m-%Y') }}. <br><br>
+                Pejabat Penilai Kinerja <br><br><br><br>
+                {% if akKredits_first.pegawai.nip != penilai.nip %}
+                {{ penilai.nama }} <br>
+                NIP.{{ penilai.nip }}
+                {% else %}
+                {{ kpa.nama }} <br>
+                NIP. {{ kpa.nip }}
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</body>
+{% endif %}
+
+</html>

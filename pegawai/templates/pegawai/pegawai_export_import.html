@@ -1,0 +1,241 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}Import/Export Data Pegawai{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Import/Export Data Pegawai</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Export Section -->
+                <div class="col-md-6">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Ekspor Data Pegawai
+                                    </div>
+                                    <p class="mb-0">Unduh semua data pegawai dalam format CSV</p>
+                                    <br>
+                                    <a href="{% url 'pegawai_export' %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-download fa-sm"></i> Unduh CSV
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file-export fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Import Section -->
+                <div class="col-md-6">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Impor Data Pegawai
+                                    </div>
+                                    <p class="mb-0">Unggah file CSV untuk menambahkan atau memperbarui data pegawai</p>
+                                    <br>
+                                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#importModal">
+                                        <i class="fas fa-upload fa-sm"></i> Unggah CSV
+                                    </button>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file-import fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <!-- Template Download Section -->
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Template CSV
+                                    </div>
+                                    <p class="mb-0">Download template CSV untuk format yang benar</p>
+                                    <small class="form-text text-muted">Catatan: Untuk mencegah konversi otomatis NIP ke format ilmiah (contoh: 1.23E+17), tambahkan petik satu (') sebelum NIP saat mengisi data di Excel, atau gunakan format teks.</small>
+                                    <br>
+                                    <a href="{% load static %}{% static 'pegawai/pegawai_template.csv' %}" class="btn btn-info btn-sm" download>
+                                        <i class="fas fa-download fa-sm"></i> Download Template
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file-csv fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Impor Data Pegawai dari CSV</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="importForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="csvFile">Pilih File CSV:</label>
+                        <input type="file" class="form-control-file" id="csvFile" name="csv_file" accept=".csv" required>
+                        <small class="form-text text-muted">Pastikan file memiliki format yang sesuai dengan template.</small>
+                    </div>
+                </form>
+                
+                <div id="importResult" class="mt-3" style="display: none;">
+                    <div class="alert alert-success" id="successMessage" style="display: none;"></div>
+                    <div class="alert alert-warning" id="warningMessage" style="display: none;"></div>
+                    <div class="alert alert-danger" id="errorMessage" style="display: none;"></div>
+                    
+                    <div id="errorDetails" class="alert alert-light border" style="display: none; max-height: 300px; overflow-y: auto;">
+                        <h6>Kesalahan Rinci:</h6>
+                        <ul id="errorList" class="mb-0"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" id="importSubmitBtn">Impor Sekarang</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const importSubmitBtn = document.getElementById('importSubmitBtn');
+    const importForm = document.getElementById('importForm');
+    const csvFileInput = document.getElementById('csvFile');
+    const importResult = document.getElementById('importResult');
+    const successMessage = document.getElementById('successMessage');
+    const warningMessage = document.getElementById('warningMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const errorDetails = document.getElementById('errorDetails');
+    const errorList = document.getElementById('errorList');
+
+    // Reset form when modal is opened
+    $('#importModal').on('shown.bs.modal', function () {
+        importForm.reset();
+        importResult.style.display = 'none';
+        successMessage.style.display = 'none';
+        warningMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        errorDetails.style.display = 'none';
+    });
+
+    importSubmitBtn.addEventListener('click', function() {
+        const file = csvFileInput.files[0];
+        
+        if (!file) {
+            showError('Silakan pilih file CSV terlebih dahulu.');
+            return;
+        }
+
+        // Check file extension
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            showError('File harus berupa file CSV.');
+            return;
+        }
+
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('csv_file', file);
+        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+        // Disable button and show loading state
+        importSubmitBtn.disabled = true;
+        importSubmitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengimpor...';
+
+        // Send AJAX request
+        fetch('{% url "pegawai_import" %}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Re-enable button
+            importSubmitBtn.disabled = false;
+            importSubmitBtn.innerHTML = 'Impor Sekarang';
+
+            if (data.success) {
+                if (data.errors && data.errors.length > 0) {
+                    showWarning(`Berhasil mengimpor ${data.imported_count} data. Ada ${data.errors.length} kesalahan.`);
+                    showErrors(data.errors);
+                } else {
+                    showSuccess(`Berhasil mengimpor ${data.imported_count} data Pegawai.`);
+                }
+            } else {
+                showError(data.error || 'Terjadi kesalahan saat mengimpor file.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Re-enable button
+            importSubmitBtn.disabled = false;
+            importSubmitBtn.innerHTML = 'Impor Sekarang';
+            showError('Terjadi kesalahan saat mengimpor file. Silakan coba lagi.');
+        });
+    });
+
+    function showSuccess(message) {
+        successMessage.textContent = message;
+        successMessage.style.display = 'block';
+        warningMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        importResult.style.display = 'block';
+    }
+
+    function showWarning(message) {
+        warningMessage.textContent = message;
+        warningMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        importResult.style.display = 'block';
+    }
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        warningMessage.style.display = 'none';
+        importResult.style.display = 'block';
+    }
+
+    function showErrors(errors) {
+        errorList.innerHTML = '';
+        errors.forEach(function(error) {
+            const li = document.createElement('li');
+            li.textContent = error;
+            errorList.appendChild(li);
+        });
+        errorDetails.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

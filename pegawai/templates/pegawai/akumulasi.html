@@ -1,0 +1,221 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}Akumulasi{% endblock %}
+
+{% block content %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h3>Akumulasi Report</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="mb-3">
+                {% csrf_token %}
+                <div class="row align-items-end">
+                    <div class="col-md-4">
+                        <label for="pegawai_select" class="form-label">Pilih Pegawai:</label>
+                        <select name="pegawai_id" id="pegawai_select" class="form-select" required>
+                            <option value="">-- Pilih Pegawai --</option>
+                            {% for p in pegawai_options %}
+                            <option value="{{ p.id }}" {% if selected_pegawai_id == p.id %}selected{% endif %}>{{ p.nama }} - {{ p.nip }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Pilih Data untuk Laporan:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                Pilih Periode & Opsi
+                            </button>
+                            <div class="dropdown-menu p-3" aria-labelledby="dropdownMenuButton" style="max-height: 300px; overflow-y: auto;">
+                                {% for ak_item in all_ak_records %}
+                                <div class="form-check">
+                                    <input class="form-check-input period-check" type="checkbox" name="selected_periods" value="{{ ak_item.id }}" id="period_{{ ak_item.id }}"
+                                        {% if ak_item.id|stringformat:"s" in selected_periods %}checked{% endif %}>
+                                    <label class="form-check-label" for="period_{{ ak_item.id }}">
+                                        {% if ak_item.is_integrasi_option %}
+                                            {{ ak_item.penilaian }}
+                                        {% else %}
+                                            {{ ak_item.tanggal_awal_penilaian|date:"d M Y" }} - {{ ak_item.tanggal_akhir_penilaian|date:"d M Y" }} ({{ ak_item.penilaian }})
+                                        {% endif %}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 align-self-end">
+                        <button type="submit" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if report_generated %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>Laporan Akumulasi untuk {{ report_data.pegawai.nama }}</h4>
+            <div>
+                <a href="{% url 'akumulasi_pdf' %}?pegawai_id={{ report_data.pegawai.id }}{% if selected_periods %}{% for p_id in selected_periods %}&selected_periods={{ p_id }}{% endfor %}{% endif %}" class="btn btn-success me-2" target="_blank"><i class="fas fa-file-pdf"></i> Cetak PDF</a>
+                <!-- <button onclick="window.print()" class="btn btn-info"><i class="fas fa-print"></i> Print HTML</button> -->
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="report-content" class="p-3">
+                <div class="text-center font-bold mb-4">
+                    <p class="h5">AKUMULASI ANGKA KREDIT</p>
+                    <p class="h6">NOMOR : 800/ ...... / ...... /Dindik/{% if report_data.tahun %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK</p>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Instansi : {{ report_data.nama_instansi }}</span>
+                    <span>Periode : {{ report_data.periode_awal_str }} s.d. {{ report_data.periode_akhir_str }}</span>
+                </div>
+
+                <table class="table table-bordered table-sm mb-4">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 5%;">I.</th>
+                            <th class="text-center" colspan="3" style="width: 95%;" style="text-align: left;">KETERANGAN PERORANGAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">1.</td>
+                            <td style="width: 30%;">Nama</td>
+                            <td class="text-center" style="width: 2%;">:</td>
+                            <td style="width: 63%;">{{ report_data.pegawai.nama }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">2.</td>
+                            <td>NIP</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.pegawai.nip }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">3.</td>
+                            <td>No. Seri Karpeg</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.pegawai.no_seri_karpeg }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">4.</td>
+                            <td>Tempat Tgl. Lahir</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.pegawai.tempat_lahir }}, {{ report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">5.</td>
+                            <td>Jenis Kelamin</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.pegawai.jenis_kelamin }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">6.</td>
+                            <td>Pangkat/Golongan ruang/TMT</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">7.</td>
+                            <td>Jabatan /TMT</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.jabatan_dan_tmt }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">8.</td>
+                            <td>Unit Kerja</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.pegawai.unit_kerja }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">9.</td>
+                            <td>Instansi</td>
+                            <td class="text-center">:</td>
+                            <td>{{ report_data.nama_instansi }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table class="table table-bordered table-sm mb-4">
+                    <thead>
+                        <tr>
+                            <th class="text-center" colspan="6">KONVERSI KE ANGKA KREDIT</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center" colspan="4">HASIL PENILAIAN KINERJA</th>
+                            <th class="text-center" rowspan="2">KOEFSIEN <br> PER TAHUN</th>
+                            <th class="text-center" rowspan="2">ANGKA KREDIT <br> YANG DI DAPAT</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center">TAHUN</th>
+                            <th class="text-center">PERIODIK <br> BULAN</th>
+                            <th class="text-center">PREDIKAT</th>
+                            <th class="text-center">PROSENTASE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for ak_item in ak_list %}
+                        {% if ak_item.is_integrasi_item %}
+                        <tr>
+                            <td class="text-center">{{ ak_item.penilaian }}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td class="text-center">{{ ak_item.tanggal_awal_penilaian.year }}</td>
+                            <td class="text-center">{{ ak_item.periode_bulan }} bulan</td>
+                            <td class="text-center">{{ ak_item.penilaian }}</td>
+                            <td class="text-center">{{ ak_item.prosentase }}%</td>
+                            <td class="text-center">{{ ak_item.koefisien }}</td>
+                            <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                        <tr>
+                            <td class="text-right font-bold" colspan="5" style="text-align: right;padding-right: 10px;">Jumlah Angka Kredit</td>
+                            <td class="text-center font-bold">{{ report_data.total_angka_kredit|floatformat:"2" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="row mt-5">
+                    <div class="col-8">
+                        <p>ASLI disampaikan dengan hormat kepada: <br>
+                        Jabatan Fungsional yang bersangkutan. </p><br>
+                        <p>Tembusan disampaikan kepada: <br>
+                        1. Jabatan Fungsional yang bersangkutan <br>
+                        2. Ketua/atasan unit kerja <br>
+                        3. Kepala Biro Kepegawaian dan Organisasi <br>
+                        4. Pejabat lain yang dianggap perlu.</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        Ditetapkan di {{ report_data.tempat_ditetapkan }} <br>
+                        Pada tanggal, {{ report_data.tanggal_ditetapkan|date:"d-m-Y" }}. <br><br>
+                        Pejabat Penilai Kinerja <br><br><br><br><br>
+                        <span class="font-bold">{{ report_data.nama_penilai }}</span> <br>
+                        {{ report_data.pangkat_penilai }}, {{ report_data.golongan_penilai }}<br>
+                        NIP.{{ report_data.nip_penilai }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Prevent dropdown from closing when clicking on a checkbox
+        const dropdownMenu = document.querySelector('.dropdown-menu');
+        if (dropdownMenu) {
+            dropdownMenu.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
+        }
+    });
+    </script>
+{% endblock %}

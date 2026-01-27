@@ -1,0 +1,3 @@
+id,nama,nip,no_seri_karpeg,tempat_lahir,tanggal_lahir,jenis_kelamin,pangkat,golongan,tmt_pangkat,jabatan,tmt_jabatan,unit_kerja
+,"Nama Lengkap","=""NIP Pegawai""","Nomor Seri Karpeg","Tempat Lahir","1990-01-01","Laki-laki/Perempuan","Pangkat Pegawai","Golongan Pegawai","2020-01-01","Jabatan Pegawai","2020-01-01","Unit Kerja Pegawai"
+,"Contoh Nama","=""123456789012345678""","S0123456","Jakarta","1990-01-01","Laki-laki","III/a","Penata Muda","2020-01-01","Analis Pertama","2020-01-01","Bagian Administrasi"
