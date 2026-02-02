@@ -771,10 +771,11 @@ def penetapan_view(request):
 
         # Tambahkan AK Pendidikan jika relevan
         ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
+        ak_pendidikan_total = 0
         if ak_pendidikan_records.exists():
             ak_pendidikan_total = sum([ak_pend.jumlah_angka_kredit for ak_pend in ak_pendidikan_records])
             if include_pendidikan_filter or not selected_periods:
-                total_baru += ak_pendidikan_total
+                # NOTE: For penetapan report, pendidikan is shown in a separate row, not added to total_baru
                 pendidikan_ak_item_display = {
                     'id': 'pendidikan_ak',
                     'tanggal_awal_penilaian': None,
@@ -799,7 +800,8 @@ def penetapan_view(request):
         pengurangan = PENGURANGAN_GOLONGAN.get(golongan, 0)
         total_baru = max(0.0, total_baru - pengurangan)  # Hindari nilai negatif
 
-        total_jumlah = total_lama + total_baru
+        # For penetapan report, total_jumlah includes ak_pendidikan_total if included
+        total_jumlah = total_lama + total_baru + ak_pendidikan_total
 
         # Hitung info kenaikan pangkat
         next_golongan = "N/A"
@@ -867,6 +869,9 @@ def penetapan_view(request):
             'total_lama': total_lama,
             'total_baru': total_baru,          # <-- SUDAH DIKURANGI SESUAI GOLONGAN
             'total_jumlah': total_jumlah,
+            'ak_pendidikan_value': ak_pendidikan_total,
+            'total_performance_only': total_lama + total_baru,
+            'total_baru_with_pendidikan': total_baru + ak_pendidikan_total,
             'pangkat_minimal': pangkat_minimal,
             'jenjang_minimal': jenjang_minimal,
             'hasil_pangkat': hasil_pangkat,
