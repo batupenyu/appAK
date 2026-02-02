@@ -91,5 +91,47 @@ class AkPendidikan(models.Model):
     nomor_sertifikat = models.CharField(max_length=255, verbose_name="Nomor Sertifikat", unique=True)
     file_sertifikat = models.FileField(upload_to='sertifikat_pendidikan/', verbose_name="File Sertifikat", blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        # Only auto-calculate jumlah_angka_kredit if it's not already set (0 or None)
+        if not self.jumlah_angka_kredit or self.jumlah_angka_kredit == 0:
+            # Calculate jumlah_angka_kredit as 25% of the minimal credit required for promotion
+            # based on the employee's current rank
+            from .constants import MINIMAL_AK_MAPPING, GOLONGAN_HIERARKI, PANGKAT_OPTIONS
+
+            try:
+                # Get the employee's current rank/golongan
+                current_golongan = self.pegawai.golongan
+
+                # Find the next rank for this employee
+                if current_golongan in GOLONGAN_HIERARKI:
+                    current_idx = GOLONGAN_HIERARKI.index(current_golongan)
+                    if current_idx < len(GOLONGAN_HIERARKI) - 1:
+                        next_golongan = GOLONGAN_HIERARKI[current_idx + 1]
+
+                        # Look up the minimal credit required for promotion
+                        key = (current_golongan, next_golongan)
+                        if key in MINIMAL_AK_MAPPING:
+                            pangkat_minimal, jenjang_minimal = MINIMAL_AK_MAPPING[key]
+
+                            # Use the higher of the two values for calculation
+                            minimal_credit = max(pangkat_minimal, jenjang_minimal) if jenjang_minimal is not None else pangkat_minimal
+
+                            # Calculate 25% of the minimal credit required for promotion
+                            self.jumlah_angka_kredit = minimal_credit * 0.25
+                        else:
+                            # If no mapping exists, set a default value or leave as 0
+                            self.jumlah_angka_kredit = 0.0
+                    else:
+                        # Employee is at the highest rank
+                        self.jumlah_angka_kredit = 0.0
+                else:
+                    # Current golongan not in hierarchy, set default
+                    self.jumlah_angka_kredit = 0.0
+            except Exception as e:
+                # In case of any error, set to 0 to allow manual entry
+                self.jumlah_angka_kredit = 0.0
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.pegawai.nama} - {self.jenis_kegiatan} ({self.tanggal_pelaksanaan})"

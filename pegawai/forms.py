@@ -84,7 +84,7 @@ class PenilaiForm(forms.ModelForm):
 class AkPendidikanForm(forms.ModelForm):
     class Meta:
         model = AkPendidikan
-        fields = '__all__'
+        exclude = ['jumlah_angka_kredit']  # Exclude jumlah_angka_kredit since it's calculated automatically
         widgets = {
             'tanggal_awal_penilaian': forms.DateInput(attrs={'type': 'date'}),
             'tanggal_akhir_penilaian': forms.DateInput(attrs={'type': 'date'}),
