@@ -229,25 +229,25 @@
           <tr>
             <td>1.</td>
             <td style="text-align: left">AK dasar yang diberikan</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
             <td>-</td>
           </tr>
           <tr>
             <td>2.</td>
             <td style="text-align: left">AK konversi dari predikat</td>
-            <td>{{ report_data.total_lama|floatformat:"3" }}</td>
-            <td>{{ report_data.total_baru|floatformat:"3" }}</td>
-            <td>{{ report_data.total_performance_only|floatformat:"3" }}</td>
+            <td style="text-align: right; padding-right: 30px">{{ report_data.total_lama|floatformat:"3" }}</td>
+            <td style="text-align: right; padding-right: 30px">{{ report_data.total_baru|floatformat:"3" }}</td>
+            <td style="text-align: right; padding-right: 30px">{{ report_data.total_performance_only|floatformat:"3" }}</td>
             <td>-</td>
           </tr>
           <tr>
             <td>3.</td>
             <td style="text-align: left">AK penyesuaian penyetaraan</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
             <td>-</td>
           </tr>
           <tr>
@@ -255,21 +255,21 @@
             <td style="text-align: left">
               AK yang diperoleh dari peningkatan pendidikan
             </td>
-            <td>-</td>
-            <td>{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
-            <td>{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
+            <td style="text-align: right; padding-right: 30px">-</td>
+            <td style="text-align: right; padding-right: 30px">{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
+            <td style="text-align: right; padding-right: 30px">{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
             <td>-</td>
           </tr>
           <tr>
             <td class="font-bold">5.</td>
             <td class="font-bold" style="text-align: left">JUMLAH</td>
-            <td class="font-bold">
+            <td class="font-bold" style="text-align: right; padding-right: 30px">
               {{ report_data.total_lama|floatformat:"3" }}
             </td>
-            <td class="font-bold">
+            <td class="font-bold" style="text-align: right; padding-right: 30px">
               {{ report_data.total_baru_with_pendidikan|floatformat:"3" }}
             </td>
-            <td class="font-bold">
+            <td class="font-bold" style="text-align: right; padding-right: 30px">
               {{ report_data.total_jumlah|floatformat:"3" }}
             </td>
             <td>-</td>
