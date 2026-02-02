@@ -46,6 +46,12 @@ urlpatterns = [
     path('ak/edit/<int:pk>/', views.AKUpdateView.as_view(), name='ak_edit'),
     path('ak/delete/<int:pk>/', views.AKDeleteView.as_view(), name='ak_delete'),
 
+    # Ak Pendidikan URLs
+    path('ak_pendidikan/', views.ak_pendidikan_list, name='ak_pendidikan_list'),
+    path('ak_pendidikan/new/', views.AkPendidikanCreateView.as_view(), name='ak_pendidikan_new'),
+    path('ak_pendidikan/edit/<int:pk>/', views.AkPendidikanUpdateView.as_view(), name='ak_pendidikan_edit'),
+    path('ak_pendidikan/delete/<int:pk>/', views.AkPendidikanDeleteView.as_view(), name='ak_pendidikan_delete'),
+
     # Instruction manual
     path('manual/', views.instruction_manual_pdf, name='instruction_manual'),
 

@@ -1,13 +1,14 @@
-"""Django WSGI application for Vercel."""
+"""
+WSGI config for AppAK project.
+
+This module contains the WSGI application used by Django's development server
+and any production WSGI deployments.
+"""
 
 import os
-import sys
 from django.core.wsgi import get_wsgi_application
 
-# Add the project directory to the Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-# Set the Django settings module
+# Set the Django settings module for local development
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'AppAk2.settings')
 
 # Create the WSGI application

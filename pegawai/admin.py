@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pegawai, Instansi, Penilai, AngkaIntegrasi, AK
+from .models import Pegawai, Instansi, Penilai, AngkaIntegrasi, AK, AkPendidikan
 
 @admin.register(Pegawai)
 class PegawaiAdmin(admin.ModelAdmin):
@@ -31,3 +31,11 @@ class AKAdmin(admin.ModelAdmin):
     list_filter = ('jenjang', 'penilaian', 'instansi', 'penilai')
     search_fields = ('pegawai__nama', 'pegawai__nip', 'instansi__nama_instansi', 'penilai__nama')
     ordering = ('pegawai', 'tanggal_awal_penilaian')
+
+@admin.register(AkPendidikan)
+class AkPendidikanAdmin(admin.ModelAdmin):
+    list_display = ('pegawai', 'jenis_kegiatan', 'tanggal_pelaksanaan', 'jumlah_angka_kredit', 'nomor_sertifikat')
+    list_filter = ('jenis_kegiatan', 'tingkat', 'instansi', 'penilai', 'tanggal_pelaksanaan')
+    search_fields = ('pegawai__nama', 'pegawai__nip', 'jenis_kegiatan', 'nomor_sertifikat', 'instansi__nama_instansi')
+    ordering = ('pegawai', 'tanggal_pelaksanaan')
+    date_hierarchy = 'tanggal_pelaksanaan'

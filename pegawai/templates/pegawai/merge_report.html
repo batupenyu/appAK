@@ -46,6 +46,15 @@
                                         Sertakan Angka Integrasi ({{ angka_integrasi_obj.jumlah_angka_integrasi }})
                                     </label>
                                 </div>
+                                {% endif %}
+
+                                {% if ak_pendidikan_records %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="selected_periods" value="pendidikan_ak" id="pendidikan_ak" {% if 'pendidikan_ak' in selected_periods %}checked{% endif %}>
+                                    <label class="form-check-label" for="pendidikan_ak">
+                                        Sertakan Angka Kredit Pendidikan ({{ ak_pendidikan_records|length }} item)
+                                    </label>
+                                </div>
                                 <hr class="my-2">
                                 {% endif %}
 
@@ -95,8 +104,7 @@
             </div>
              <div class="card-footer no-print">
                 <button onclick="printReport()" class="btn btn-primary me-2">Cetak</button>
-                <!-- <a href="{% url 'merge_report_pdf' %}?pegawai_id={{ selected_pegawai_id }}{% for period in selected_periods %}&selected_periods={{ period }}{% endfor %}{% if start_date %}&start_date={{ start_date|date:'Y-m-d' }}{% endif %}{% if end_date %}&end_date={{ end_date|date:'Y-m-d' }}{% endif %}"
-                   class="btn btn-success">Cetak PDF Bersih</a> -->
+                <a href="#" id="pdf-link" class="btn btn-success">Cetak PDF Bersih</a>
             </div>
         </div>
 
@@ -139,6 +147,36 @@
             function printReport() {
                 window.print();
             }
+
+            // Update the PDF link to include the AkPendidikan checkbox state
+            document.addEventListener('DOMContentLoaded', function() {
+                const pdfLink = document.getElementById('pdf-link');
+                if (pdfLink) {
+                    // Build the base URL with existing parameters
+                    let baseUrl = '{% url 'merge_report_pdf' %}?pegawai_id={{ selected_pegawai_id }}';
+
+                    // Add selected periods
+                    {% for period in selected_periods %}
+                        baseUrl += '&selected_periods={{ period }}';
+                    {% endfor %}
+
+                    // Add date range if available
+                    {% if start_date %}
+                        baseUrl += '&start_date={{ start_date|date:'Y-m-d' }}';
+                    {% endif %}
+                    {% if end_date %}
+                        baseUrl += '&end_date={{ end_date|date:'Y-m-d' }}';
+                    {% endif %}
+
+                    // Check if AkPendidikan checkbox is checked and add to URL
+                    const pendidikanCheck = document.getElementById('pendidikan_ak');
+                    if (pendidikanCheck && pendidikanCheck.checked) {
+                        baseUrl += '&include_ak_pendidikan=true';
+                    }
+
+                    pdfLink.href = baseUrl;
+                }
+            });
         </script>
     {% endif %}
 </div>

@@ -167,6 +167,15 @@
                         <td>{{ report_data.angka_integrasi_value|floatformat:"2" }}</td>
                     </tr>
                     {% endif %}
+
+                    {% if report_data.include_ak_pendidikan and report_data.ak_pendidikan_value > 0 %}
+                    <tr>
+                        <td>AK Pendidikan</td>
+                        <td>.</td>
+                        <td>.</td>
+                        <td>{{ report_data.ak_pendidikan_value|floatformat:"2" }}</td>
+                    </tr>
+                    {% endif %}
                     {% for ak_item in ak_list %}
                     <tr>
                         <td>{{ ak_item.penilaian }}</td>

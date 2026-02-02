@@ -26,15 +26,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-)))w*k!ve%=n*ck9+=$!45#26@b4+=2+si_jtw5asj-)=8_8-j')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)  # Default to True for local development
 
-# Update ALLOWED_HOSTS for Vercel deployment
+# Update ALLOWED_HOSTS for local development
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '.vercel.app',  # Allow all Vercel domains
-    '.now.sh',      # Legacy Vercel domain pattern
+    'nonidiomatical-teetotally-camron.ngrok-free.dev',
 ]
+
+# For Vercel deployment, allow additional hosts
+if os.environ.get('ENVIRONMENT') == 'production':
+    ALLOWED_HOSTS.extend([
+        '.vercel.app',
+        '.now.sh',
+    ])
 
 # Application definition
 
@@ -91,6 +97,14 @@ from decouple import config, UndefinedValueError
 # Check if we should use SQLite for initial migration
 USE_SQLITE_FOR_MIGRATION = os.environ.get('USE_SQLITE_FOR_MIGRATION', 'false').lower() == 'true'
 
+# Initialize DATABASES with SQLite as default
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
 # Check if Supabase credentials are properly defined
 try:
     # Try to get the required Supabase configuration values
@@ -101,43 +115,30 @@ try:
 
     # Check if any of the required values are empty
     if (SUPABASE_DB_NAME and SUPABASE_DB_USER and SUPABASE_DB_PASSWORD and SUPABASE_DB_HOST and not USE_SQLITE_FOR_MIGRATION):
-        # If all required values exist and are not empty, use PostgreSQL
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.getenv('DB_NAME', 'postgres'),
-                'USER': os.getenv('DB_USER', 'postgres'),
-                'PASSWORD': os.getenv('ku3nSupabase', ''),
-                'HOST': os.getenv('DB_HOST', 'qwpyagbdfmsxyoxanysx.supabase.co'),
-                'PORT': os.getenv('DB_PORT', '443'),
-                # 'OPTIONS': {
-                #     'sslmode': 'require',
-                #     'sslrootcert': os.path.join(BASE_DIR, 'ssl', 'prod-ca-2021.crt'),
-                },
-            }
+        # If all required values exist and are not empty, update to PostgreSQL
+        DATABASES['default'] = {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME', 'postgres'),
+            'USER': os.getenv('DB_USER', 'postgres'),
+            'PASSWORD': os.getenv('ku3nSupabase', ''),
+            'HOST': os.getenv('DB_HOST', 'qwpyagbdfmsxyoxanysx.supabase.co'),
+            'PORT': os.getenv('DB_PORT', '443'),
+            # 'OPTIONS': {
+            #     'sslmode': 'require',
+            #     'sslrootcert': os.path.join(BASE_DIR, 'ssl', 'prod-ca-2021.crt'),
+            # },
         }
         # Add SSL certificate path if specified
         if config('DB_SSL_CERT_PATH', default=''):
+            if 'OPTIONS' not in DATABASES['default']:
+                DATABASES['default']['OPTIONS'] = {}
             DATABASES['default']['OPTIONS']['sslcert'] = config('DB_SSL_CERT_PATH')
     else:
-        # Fallback to SQLite if any credential is missing/empty or if explicitly requested
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
         if not (SUPABASE_DB_NAME and SUPABASE_DB_USER and SUPABASE_DB_PASSWORD and SUPABASE_DB_HOST):
             print("Warning: Supabase credentials not found or incomplete. Using SQLite for now.")
             print("To use Supabase, please fill in your credentials in the .env file.")
 except UndefinedValueError:
-    # If any Supabase credential is not defined at all, fallback to SQLite
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+    # If any Supabase credential is not defined at all, keep SQLite
     print("Warning: Supabase credentials not found or incomplete. Using SQLite for now.")
     print("To use Supabase, please fill in your credentials in the .env file.")
 
@@ -203,4 +204,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vercel.app',
     'https://*.now.sh',
+    'https://nonidiomatical-teetotally-camron.ngrok-free.dev',
 ]
+

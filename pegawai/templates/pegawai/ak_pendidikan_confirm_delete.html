@@ -1,0 +1,30 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}Konfirmasi Hapus Ak Pendidikan{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Konfirmasi Hapus Ak Pendidikan</h6>
+        </div>
+        <div class="card-body">
+            <p>Apakah Anda yakin ingin menghapus data Ak Pendidikan berikut?</p>
+            
+            <div class="alert alert-warning">
+                <strong>Nama Pegawai:</strong> {{ object.pegawai.nama }}<br>
+                <strong>Jenis Kegiatan:</strong> {{ object.jenis_kegiatan }}<br>
+                <strong>Tanggal Pelaksanaan:</strong> {{ object.tanggal_pelaksanaan|date:"d-m-Y" }}<br>
+                <strong>Jumlah Angka Kredit:</strong> {{ object.jumlah_angka_kredit }}<br>
+                <strong>Instansi:</strong> {{ object.instansi.nama_instansi }}
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Ya, Hapus</button>
+                <a href="{% url 'ak_pendidikan_list' %}" class="btn btn-secondary">Batal</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

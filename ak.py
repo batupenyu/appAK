@@ -5,6 +5,8 @@ from datetime import datetime
 import os
 import json
 from dateutil.relativedelta import relativedelta
+from fpdf import FPDF
+import base64
 
 # Data pangkat dan golongan
 PANGKAT_OPTIONS = {
@@ -1446,6 +1448,79 @@ def generate_konversi_html(data_pegawai, data_ak, include_angka_integrasi=False,
     """
     return html
 
+def html_to_pdf_with_weasyprint(html_content, nama_pegawai, tanggal_awal, tanggal_akhir):
+    """Convert HTML content to PDF with custom naming convention using WeasyPrint"""
+    try:
+        from weasyprint import HTML, CSS
+        from io import BytesIO
+
+        # Create a BytesIO buffer to store the PDF
+        pdf_buffer = BytesIO()
+
+        # Convert HTML string to PDF
+        HTML(string=html_content).write_pdf(pdf_buffer)
+
+        # Get the PDF bytes
+        pdf_bytes = pdf_buffer.getvalue()
+        pdf_buffer.close()
+
+        return pdf_bytes
+    except ImportError:
+        # Fallback to FPDF if weasyprint is not available
+        return html_to_pdf_with_fpdf(html_content, nama_pegawai, tanggal_awal, tanggal_akhir)
+
+def html_to_pdf_with_fpdf(html_content, nama_pegawai, tanggal_awal, tanggal_akhir):
+    """Convert HTML content to PDF with custom naming convention using FPDF"""
+
+    # Create PDF instance
+    pdf = FPDF()
+    pdf.add_page()
+
+    # Add a basic font
+    pdf.add_font('Arial', '', '', True)
+    pdf.set_font('Arial', '', 12)
+
+    # Since FPDF doesn't directly support HTML, we'll add the content as plain text
+    # For a more advanced solution, we could use weasyprint or similar
+
+    # For now, let's create a simplified version focusing on the key elements
+    pdf.set_auto_page_break(auto=True, margin=15)
+
+    # Title
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'KONVERSI KE ANGKA KREDIT', ln=True, align='C')
+    pdf.ln(5)
+
+    # Add employee info
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 8, f'Nama: {nama_pegawai}', ln=True)
+    pdf.cell(0, 8, f'Periode: {tanggal_awal} s.d. {tanggal_akhir}', ln=True)
+    pdf.ln(5)
+
+    # Add the HTML content as plain text (simplified)
+    # In a real implementation, we would parse the HTML properly
+    lines = html_content.split('<br>')  # Simple split on br tags
+    for line in lines:
+        clean_line = line.replace('<p>', '').replace('</p>', '').replace('<b>', '').replace('</b>', '')
+        if clean_line.strip():
+            pdf.cell(0, 8, clean_line.strip(), ln=True)
+
+    # Return PDF bytes
+    return pdf.output(dest='S').encode('latin-1')
+
+def get_pdf_download_link(pdf_bytes, nama_pegawai, tanggal_awal, tanggal_akhir):
+    """Generate a download link for the PDF with the specified naming convention"""
+    # Format the filename according to the requirement
+    filename = f"Konversi an.{nama_pegawai} periode {tanggal_awal} s.d {tanggal_akhir}.pdf"
+
+    # Encode the PDF bytes to base64
+    b64 = base64.b64encode(pdf_bytes).decode()
+
+    # Create the download link
+    href = f'<a href="data:application/octet-stream;base64,{b64}" download="{filename}">Download PDF</a>'
+
+    return href
+
 # Sidebar untuk navigasi
 st.sidebar.title("📋 Menu Navigasi")
 menu = st.sidebar.radio(
@@ -2485,6 +2560,38 @@ elif menu == "📊 Laporan":
                         </button>
                         """,
                         height=80
+                    )
+
+                    # Tombol Download PDF for all report types
+                    # Extract employee name and dates for the filename
+                    nama_pegawai = data_pegawai.get('nama_pegawai', 'pegawai')
+
+                    # Extract dates from the data
+                    if not df_ak.empty and 'tanggal_awal_penilaian' in df_ak.columns:
+                        tanggal_awal = pd.to_datetime(df_ak['tanggal_awal_penilaian'].min()).strftime('%d-%m-%Y')
+                        tanggal_akhir = pd.to_datetime(df_ak['tanggal_akhir_penilaian'].max()).strftime('%d-%m-%Y')
+                    else:
+                        tanggal_awal = "01-01-2024"
+                        tanggal_akhir = "31-12-2024"
+
+                    # Determine the report type for the filename
+                    if jenis_laporan == "Penetapan":
+                        report_prefix = "Penetapan"
+                    elif jenis_laporan == "Akumulasi":
+                        report_prefix = "Akumulasi"
+                    else:  # Konversi
+                        report_prefix = "Konversi"
+
+                    # Generate PDF
+                    pdf_bytes = html_to_pdf_with_weasyprint(html_report, nama_pegawai, tanggal_awal, tanggal_akhir)
+
+                    # Create download button with custom naming
+                    filename = f"{report_prefix} an.{nama_pegawai} periode {tanggal_awal} s.d {tanggal_akhir}.pdf"
+                    st.download_button(
+                        label=f"📥 Download PDF {jenis_laporan}",
+                        data=pdf_bytes,
+                        file_name=filename,
+                        mime="application/pdf"
                     )
     else:
         st.info("Belum ada data pegawai. Silakan tambahkan data pegawai terlebih dahulu.")

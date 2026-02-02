@@ -34,12 +34,23 @@
                                     <label class="form-check-label" for="period_{{ ak_item.id }}">
                                         {% if ak_item.is_integrasi_option %}
                                             {{ ak_item.penilaian }}
+                                        {% elif ak_item.is_pendidikan_option %}
+                                            {{ ak_item.penilaian }}
                                         {% else %}
                                             {{ ak_item.tanggal_awal_penilaian|date:"d M Y" }} - {{ ak_item.tanggal_akhir_penilaian|date:"d M Y" }} ({{ ak_item.penilaian }})
                                         {% endif %}
                                     </label>
                                 </div>
                                 {% endfor %}
+
+                                <hr class="my-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_ak_pendidikan" value="true" id="pendidikan_check"
+                                        {% if include_ak_pendidikan %}checked{% endif %}>
+                                    <label class="form-check-label" for="pendidikan_check">
+                                        Sertakan Angka Kredit Pendidikan
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -165,6 +176,15 @@
                             <td>-</td>
                             <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
                         </tr>
+                        {% elif ak_item.is_pendidikan_item %}
+                        <tr>
+                            <td class="text-center">{{ ak_item.penilaian }}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                        </tr>
                         {% else %}
                         <tr>
                             <td class="text-center">{{ ak_item.tanggal_awal_penilaian.year }}</td>
@@ -215,6 +235,17 @@
             dropdownMenu.addEventListener('click', function (e) {
                 e.stopPropagation();
             });
+        }
+
+        // Update the PDF link to include the AkPendidikan checkbox state
+        const pdfLink = document.querySelector('a[href*="akumulasi_pdf"]');
+        if (pdfLink) {
+            const includePendidikan = document.getElementById('pendidikan_check')?.checked || false;
+            if (includePendidikan) {
+                const currentUrl = new URL(pdfLink.href);
+                currentUrl.searchParams.set('include_ak_pendidikan', 'true');
+                pdfLink.href = currentUrl.toString();
+            }
         }
     });
     </script>

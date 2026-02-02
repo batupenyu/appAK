@@ -37,6 +37,16 @@
                                         Sertakan Angka Integrasi ({{ angka_integrasi_obj.jumlah_angka_integrasi }})
                                     </label>
                                 </div>
+                                {% endif %}
+
+                                {% if ak_pendidikan_records %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="include_ak_pendidikan" value="true" id="pendidikan_check"
+                                        {% if include_ak_pendidikan %}checked{% endif %}>
+                                    <label class="form-check-label" for="pendidikan_check">
+                                        Sertakan Angka Kredit Pendidikan ({{ ak_pendidikan_records|length }} item)
+                                    </label>
+                                </div>
                                 <hr class="my-2">
                                 {% endif %}
 
@@ -171,6 +181,15 @@
                             <td class="text-center">{{ report_data.angka_integrasi_value|floatformat:"2" }}</td>
                         </tr>
                         {% endif %}
+
+                        {% if report_data.include_ak_pendidikan and report_data.ak_pendidikan_value > 0 %}
+                        <tr>
+                            <td class="text-center" >AK Pendidikan</td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-center">{{ report_data.ak_pendidikan_value|floatformat:"2" }}</td>
+                        </tr>
+                        {% endif %}
                         {% for ak_item in ak_list %}
                             <tr>
                                 <td class="text-center">{{ ak_item.penilaian }}</td>
@@ -220,17 +239,22 @@
 
                 const selectedPeriods = Array.from(document.querySelectorAll('input[name="selected_periods"]:checked'))
                                              .map(cb => `selected_periods=${cb.value}`);
-                
+
                 const includeIntegrasi = document.getElementById('integrasi_check')?.checked || false;
-                
+                const includePendidikan = document.getElementById('pendidikan_check')?.checked || false;
+
                 let url = `{% url 'konversi_pdf' %}?pegawai_id=${pegawaiId}`;
-                
+
                 if (selectedPeriods.length > 0) {
                     url += '&' + selectedPeriods.join('&');
                 }
-                
+
                 if (includeIntegrasi) {
                     url += '&include_angka_integrasi=true';
+                }
+
+                if (includePendidikan) {
+                    url += '&include_ak_pendidikan=true';
                 }
 
                 window.open(url, '_blank');

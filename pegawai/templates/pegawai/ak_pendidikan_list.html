@@ -1,0 +1,94 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}Daftar Ak Pendidikan{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Ak Pendidikan</h6>
+            <a href="{% url 'ak_pendidikan_new' %}" class="btn btn-primary btn-sm">Tambah Baru</a>
+        </div>
+        <div class="card-body">
+            <!-- Search Form -->
+            <form method="get" class="mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="search" placeholder="Cari berdasarkan nama pegawai..." value="{{ search_query }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit">Cari</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            {% if page_obj %}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Pegawai</th>
+                                <th>Jenis Kegiatan</th>
+                                <th>Tanggal Pelaksanaan</th>
+                                <th>Angka Kredit</th>
+                                <th>Instansi</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ak_pendidikan in page_obj %}
+                            <tr>
+                                <td>{{ ak_pendidikan.pegawai.nama }}</td>
+                                <td>{{ ak_pendidikan.jenis_kegiatan }}</td>
+                                <td>{{ ak_pendidikan.tanggal_pelaksanaan|date:"d-m-Y" }}</td>
+                                <td>{{ ak_pendidikan.jumlah_angka_kredit }}</td>
+                                <td>{{ ak_pendidikan.instansi.nama_instansi }}</td>
+                                <td>
+                                    <a href="{% url 'ak_pendidikan_edit' ak_pendidikan.pk %}" class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{% url 'ak_pendidikan_delete' ak_pendidikan.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">&laquo; Pertama</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Sebelumnya</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Selanjutnya</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Terakhir &raquo;</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <p>Tidak ada data Ak Pendidikan.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

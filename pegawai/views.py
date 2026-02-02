@@ -4,8 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
-from .models import Pegawai, AngkaIntegrasi, Instansi, Penilai, AK
-from .forms import AKForm, PegawaiForm, AngkaIntegrasiForm, InstansiForm, PenilaiForm
+from .models import Pegawai, AngkaIntegrasi, Instansi, Penilai, AK, AkPendidikan
+from .forms import AKForm, PegawaiForm, AngkaIntegrasiForm, InstansiForm, PenilaiForm, AkPendidikanForm
 from datetime import datetime
 from django.db import models
 from dateutil.relativedelta import relativedelta
@@ -181,7 +181,7 @@ def pegawai_export_import(request):
     """Display the export/import page for Pegawai data."""
     return render(request, 'pegawai/pegawai_export_import.html')
 
-def _get_konversi_report_data(pegawai, ak_record_ids, include_integrasi):
+def _get_konversi_report_data(pegawai, ak_record_ids, include_integrasi, include_pendidikan=False):
     """Helper function to generate data for the Konversi report."""
 
     ak_records_for_report_qs = AK.objects.filter(pegawai=pegawai)
@@ -230,6 +230,26 @@ def _get_konversi_report_data(pegawai, ak_record_ids, include_integrasi):
             angka_integrasi_value = angka_integrasi_obj.jumlah_angka_integrasi
             total_angka_kredit += angka_integrasi_value
 
+    # Handle Ak Pendidikan
+    ak_pendidikan_value = 0.0
+    ak_pendidikan_list = []
+    if include_pendidikan:
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
+        for ak_pend in ak_pendidikan_records:
+            ak_pendidikan_value += ak_pend.jumlah_angka_kredit
+            # Create a dictionary representation for display in the template
+            ak_pend_dict = {
+                'id': f'pendidikan_{ak_pend.id}',
+                'jenis_kegiatan': ak_pend.jenis_kegiatan,
+                'tanggal_pelaksanaan': ak_pend.tanggal_pelaksanaan,
+                'jumlah_angka_kredit': ak_pend.jumlah_angka_kredit,
+                'is_pendidikan_item': True,
+                'nomor_sertifikat': ak_pend.nomor_sertifikat,
+            }
+            ak_pendidikan_list.append(ak_pend_dict)
+
+        total_angka_kredit += ak_pendidikan_value
+
     report_data = {
         'pegawai': pegawai,
         'ak_list': ak_list_for_report,
@@ -241,6 +261,9 @@ def _get_konversi_report_data(pegawai, ak_record_ids, include_integrasi):
         'total_angka_kredit': total_angka_kredit,
         'include_angka_integrasi': include_integrasi,
         'angka_integrasi_value': angka_integrasi_value,
+        'include_ak_pendidikan': include_pendidikan,
+        'ak_pendidikan_value': ak_pendidikan_value,
+        'ak_pendidikan_list': ak_pendidikan_list,
         'tempat_ditetapkan': latest_ak.tempat_ditetapkan if latest_ak else '',
         'tanggal_ditetapkan': latest_ak.tanggal_ditetapkan if latest_ak else datetime.now().date(),
         'nama_penilai': latest_ak.penilai.nama if latest_ak and latest_ak.penilai else '',
@@ -256,32 +279,36 @@ def konversi_view(request):
     report_data = {}
     ak_list_for_report = []
     report_generated = False
-    
+
     pegawai_id = request.POST.get('pegawai_id') or request.GET.get('pegawai_id')
     selected_period_ids = request.POST.getlist('selected_periods')
     include_angka_integrasi_str = request.POST.get('include_angka_integrasi', 'false')
     include_angka_integrasi = include_angka_integrasi_str.lower() == 'true'
+    include_ak_pendidikan_str = request.POST.get('include_ak_pendidikan', 'false')
+    include_ak_pendidikan = include_ak_pendidikan_str.lower() == 'true'
 
     all_ak_records_for_pegawai = []
     angka_integrasi_obj = None
+    ak_pendidikan_records = []
 
     if pegawai_id:
         pegawai = get_object_or_404(Pegawai, id=pegawai_id)
         all_ak_records_for_pegawai = AK.objects.filter(pegawai=pegawai).order_by('tanggal_awal_penilaian')
         angka_integrasi_obj = AngkaIntegrasi.objects.filter(pegawai=pegawai).first()
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
 
         # If the form was submitted to generate a report
         if request.method == 'POST':
             # Default to all periods if none are selected, but only if the button was pushed
             use_all_periods = not selected_period_ids and 'pegawai_id' in request.POST
-            
+
             final_period_ids = selected_period_ids
             if use_all_periods:
                 final_period_ids = [str(ak.id) for ak in all_ak_records_for_pegawai]
 
-            report_data, ak_list_for_report = _get_konversi_report_data(pegawai, final_period_ids, include_angka_integrasi)
+            report_data, ak_list_for_report = _get_konversi_report_data(pegawai, final_period_ids, include_angka_integrasi, include_ak_pendidikan)
             report_generated = True
-        
+
     context = {
         'pegawai_options': pegawai_options,
         'report_generated': report_generated,
@@ -289,9 +316,11 @@ def konversi_view(request):
         'ak_list': ak_list_for_report,
         'selected_pegawai_id': int(pegawai_id) if pegawai_id else None,
         'all_ak_records': all_ak_records_for_pegawai,
+        'ak_pendidikan_records': ak_pendidikan_records,
         'angka_integrasi_obj': angka_integrasi_obj,
-        'selected_period_ids': [int(p) for p in selected_period_ids],
+        'selected_period_ids': [int(p) for p in selected_period_ids] if all(isinstance(p, str) and p.isdigit() for p in selected_period_ids) else selected_period_ids,
         'include_angka_integrasi': include_angka_integrasi,
+        'include_ak_pendidikan': include_ak_pendidikan,
     }
     return render(request, 'pegawai/konversi.html', context)
 
@@ -300,18 +329,20 @@ def konversi_pdf_view(request):
     pegawai_id = request.GET.get('pegawai_id')
     if not pegawai_id:
         return HttpResponse("Pegawai ID is required.", status=400)
-    
+
     selected_period_ids = request.GET.getlist('selected_periods')
     include_angka_integrasi_str = request.GET.get('include_angka_integrasi', 'false')
     include_angka_integrasi = include_angka_integrasi_str.lower() == 'true'
-    
+    include_ak_pendidikan_str = request.GET.get('include_ak_pendidikan', 'false')
+    include_ak_pendidikan = include_ak_pendidikan_str.lower() == 'true'
+
     pegawai = get_object_or_404(Pegawai, id=pegawai_id)
-    
+
     # If no periods are passed, get all of them for the report
     if not selected_period_ids:
         selected_period_ids = list(AK.objects.filter(pegawai=pegawai).values_list('id', flat=True))
 
-    report_data, ak_list_for_report = _get_konversi_report_data(pegawai, selected_period_ids, include_angka_integrasi)
+    report_data, ak_list_for_report = _get_konversi_report_data(pegawai, selected_period_ids, include_angka_integrasi, include_ak_pendidikan)
 
     context = {
         'report_data': report_data,
@@ -329,9 +360,11 @@ def akumulasi_view(request):
     report_data = {}
     ak_list_for_report = []
     report_generated = False
-    
+
     pegawai_id = request.POST.get('pegawai_id') or request.GET.get('pegawai_id')
     selected_periods = request.POST.getlist('selected_periods') # Get selected period IDs
+    include_ak_pendidikan_str = request.POST.get('include_ak_pendidikan', 'false')
+    include_ak_pendidikan = include_ak_pendidikan_str.lower() == 'true'
 
     # Get all AK records for the selected pegawai (for dropdown options)
     all_ak_records_for_pegawai = []
@@ -352,29 +385,45 @@ def akumulasi_view(request):
             # Insert at the beginning of the list to show first in dropdown
             all_ak_records_for_pegawai.insert(0, integrasi_option)
 
+        # Add Ak Pendidikan as a selectable option if it exists
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai_obj)
+        if ak_pendidikan_records.exists():
+            pendidikan_option = {
+                'id': 'pendidikan_ak', # Unique string identifier for this option
+                'penilaian': 'AK Pendidikan',
+                'tanggal_awal_penilaian': None, # Not applicable for display in dropdown
+                'tanggal_akhir_penilaian': None, # Not applicable for display in dropdown
+                'is_pendidikan_option': True, # Custom flag to identify this item
+            }
+            # Insert after integrasi option to show in dropdown
+            all_ak_records_for_pegawai.insert(1, pendidikan_option)
+
 
     ak_records_filtered = AK.objects.none() # Initialize as an empty QuerySet
-    
+
     if pegawai_id:
         pegawai = get_object_or_404(Pegawai, id=pegawai_id)
         jabatan_fungsional = "Analis" # Initialize with a default value
 
         # Fetch the true latest AK record for the selected pegawai, regardless of filters
         latest_ak_unfiltered = AK.objects.filter(pegawai=pegawai).order_by('tanggal_akhir_penilaian').last()
-        
-        # Separate selected_periods into actual AK IDs and a flag for Integrasi
+
+        # Separate selected_periods into actual AK IDs and flags for Integrasi and Pendidikan
         selected_ak_ids = []
         include_integrasi_filter = False
+        include_pendidikan_filter = False
         if selected_periods: # Only process if something was selected
             for p_id in selected_periods:
                 if p_id == 'integrasi_ak':
                     include_integrasi_filter = True
+                elif p_id == 'pendidikan_ak':
+                    include_pendidikan_filter = True
                 else:
                     try:
                         selected_ak_ids.append(int(p_id))
                     except ValueError:
                         pass # Ignore invalid IDs
-        
+
         # Build the initial queryset for AK records
         ak_records_queryset = AK.objects.filter(pegawai=pegawai).order_by('tanggal_awal_penilaian')
 
@@ -420,7 +469,7 @@ def akumulasi_view(request):
         periode_awal_str = ''
         periode_akhir_str = ''
         # These need to be based on the actual AK records in ak_list_for_report, not ak_records_queryset
-        
+
         # Initialize ak_list_for_report from filtered ak_records
         ak_list_for_report = list(ak_records_filtered)
 
@@ -431,17 +480,17 @@ def akumulasi_view(request):
             for item in ak_list_for_report:
                 # Check if it's an Integrasi item (which is a dict)
                 is_integrasi = isinstance(item, dict) and item.get('is_integrasi_item', False)
-    
+
                 if not is_integrasi: # Only consider actual AK records
                     # Access attributes safely for model instances
                     tanggal_awal = getattr(item, 'tanggal_awal_penilaian', None)
                     tanggal_akhir = getattr(item, 'tanggal_akhir_penilaian', None)
-    
+
                     if not min_tgl_awal_filtered or (tanggal_awal and tanggal_awal < min_tgl_awal_filtered):
                         min_tgl_awal_filtered = tanggal_awal
                     if not max_tgl_akhir_filtered or (tanggal_akhir and tanggal_akhir > max_tgl_akhir_filtered):
                         max_tgl_akhir_filtered = tanggal_akhir
-            
+
             if min_tgl_awal_filtered:
                 periode_awal_str = min_tgl_awal_filtered.strftime('%d-%m-%Y')
             if max_tgl_akhir_filtered:
@@ -450,7 +499,7 @@ def akumulasi_view(request):
 
         for ak_item in ak_list_for_report: # Iterate over the actual records for total
             total_angka_kredit += ak_item.jumlah_angka_kredit
-            
+
             if ak_item.tanggal_awal_penilaian and ak_item.tanggal_akhir_penilaian:
                 rdelta = relativedelta(ak_item.tanggal_akhir_penilaian, ak_item.tanggal_awal_penilaian)
                 months = rdelta.years * 12 + rdelta.months
@@ -460,16 +509,16 @@ def akumulasi_view(request):
                 ak_item.periode_bulan = months
             else:
                 ak_item.periode_bulan = 0
-        
+
         # Handle AK Integrasi separately for display in ak_list_for_report
         angka_integrasi_obj = AngkaIntegrasi.objects.filter(pegawai=pegawai).first()
         if angka_integrasi_obj:
             angka_integrasi_value = angka_integrasi_obj.jumlah_angka_integrasi
-            
+
             # If 'integrasi_ak' was selected OR no filters were selected (show all)
             if include_integrasi_filter or not selected_periods:
                 total_angka_kredit += angka_integrasi_value # Add to total only if included in report
-                
+
                 # Create a dummy AK item for Integrasi
                 integrasi_ak_item_display = {
                     'id': 'integrasi_ak',
@@ -483,6 +532,30 @@ def akumulasi_view(request):
                 }
                 # Prepend to the list
                 ak_list_for_report.insert(0, integrasi_ak_item_display)
+
+        # Handle Ak Pendidikan separately for display in ak_list_for_report
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
+        if ak_pendidikan_records.exists():
+            ak_pendidikan_total = sum([ak_pend.jumlah_angka_kredit for ak_pend in ak_pendidikan_records])
+
+            # If 'pendidikan_ak' was selected OR no filters were selected (show all)
+            if include_pendidikan_filter or not selected_periods:
+                total_angka_kredit += ak_pendidikan_total # Add to total only if included in report
+
+                # Create a dummy AK item for Pendidikan
+                pendidikan_ak_item_display = {
+                    'id': 'pendidikan_ak',
+                    'tanggal_awal_penilaian': None, # Not applicable
+                    'periode_bulan': None, # Not applicable
+                    'penilaian': 'AK Pendidikan',
+                    'prosentase': None, # Not applicable
+                    'koefisien': None, # Not applicable
+                    'jumlah_angka_kredit': ak_pendidikan_total,
+                    'is_pendidikan_item': True, # Custom flag for template
+                }
+                # Prepend to the list after integrasi if present
+                insert_index = 1 if include_integrasi_filter or (not selected_periods and angka_integrasi_obj) else 0
+                ak_list_for_report.insert(insert_index, pendidikan_ak_item_display)
 
         report_data = {
             'pegawai': pegawai,
@@ -510,6 +583,7 @@ def akumulasi_view(request):
         'report_data': report_data,
         'ak_list': ak_list_for_report,
         'selected_pegawai_id': int(pegawai_id) if pegawai_id else None,
+        'include_ak_pendidikan': include_ak_pendidikan,  # Pass the flag to template
     }
     return render(request, 'pegawai/akumulasi.html', context)
 
@@ -518,32 +592,39 @@ def akumulasi_pdf_view(request):
     pegawai_id = request.GET.get('pegawai_id')
     if not pegawai_id:
         return HttpResponse("Pegawai ID is required.", status=400)
-    
+
     selected_periods = request.GET.getlist('selected_periods') # Get selected period IDs
-    
+    include_ak_pendidikan_str = request.GET.get('include_ak_pendidikan', 'false')
+    include_ak_pendidikan = include_ak_pendidikan_str.lower() == 'true'
+
     pegawai = get_object_or_404(Pegawai, id=pegawai_id)
 
-    # Separate selected_periods into actual AK IDs and a flag for Integrasi
+    # Separate selected_periods into actual AK IDs and flags for Integrasi and Pendidikan
     selected_ak_ids = []
     include_integrasi_filter = False
+    include_pendidikan_filter = False
     if selected_periods: # Only process if something was selected
         for p_id in selected_periods:
             if p_id == 'integrasi_ak':
                 include_integrasi_filter = True
+            elif p_id == 'pendidikan_ak':
+                include_pendidikan_filter = True
             else:
                 try:
                     selected_ak_ids.append(int(p_id))
                 except ValueError:
                     pass # Ignore invalid IDs
-    
+
     # If no periods are passed, get all of them for the report
     if not selected_periods:
         selected_ak_ids = list(AK.objects.filter(pegawai=pegawai).values_list('id', flat=True))
         if AngkaIntegrasi.objects.filter(pegawai=pegawai).exists():
             include_integrasi_filter = True
+        if AkPendidikan.objects.filter(pegawai=pegawai).exists():
+            include_pendidikan_filter = True
 
 
-    report_data = _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filter)
+    report_data = _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filter, include_pendidikan_filter)
 
     context = {
         'report_data': report_data,
@@ -562,6 +643,8 @@ def penetapan_view(request):
     report_generated = False
     pegawai_id = request.POST.get('pegawai_id') or request.GET.get('pegawai_id')
     selected_periods = request.POST.getlist('selected_periods')  # Get selected period IDs
+    include_ak_pendidikan_str = request.POST.get('include_ak_pendidikan', 'false')
+    include_ak_pendidikan = include_ak_pendidikan_str.lower() == 'true'
 
     # Get all AK records for the selected pegawai (for dropdown options)
     all_ak_records_for_pegawai = []
@@ -580,6 +663,18 @@ def penetapan_view(request):
             }
             all_ak_records_for_pegawai.insert(0, integrasi_option)
 
+        # Add Ak Pendidikan as a selectable option if it exists
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai_obj)
+        if ak_pendidikan_records.exists():
+            pendidikan_option = {
+                'id': 'pendidikan_ak',
+                'penilaian': 'AK Pendidikan',
+                'tanggal_awal_penilaian': None,
+                'tanggal_akhir_penilaian': None,
+                'is_pendidikan_option': True,
+            }
+            all_ak_records_for_pegawai.insert(1, pendidikan_option)
+
     ak_records_filtered = AK.objects.none()  # Initialize as an empty QuerySet
 
     if pegawai_id:
@@ -587,13 +682,16 @@ def penetapan_view(request):
         # Fetch the true latest AK record for the selected pegawai, regardless of filters
         latest_ak_unfiltered = AK.objects.filter(pegawai=pegawai).order_by('tanggal_akhir_penilaian').last()
 
-        # Separate selected_periods into actual AK IDs and a flag for Integrasi
+        # Separate selected_periods into actual AK IDs and flags for Integrasi and Pendidikan
         selected_ak_ids = []
         include_integrasi_filter = False
+        include_pendidikan_filter = False
         if selected_periods:  # Only process if something was selected
             for p_id in selected_periods:
                 if p_id == 'integrasi_ak':
                     include_integrasi_filter = True
+                elif p_id == 'pendidikan_ak':
+                    include_pendidikan_filter = True
                 else:
                     try:
                         selected_ak_ids.append(int(p_id))
@@ -671,6 +769,26 @@ def penetapan_view(request):
                 }
                 ak_list_for_report.insert(0, integrasi_ak_item_display)
 
+        # Tambahkan AK Pendidikan jika relevan
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
+        if ak_pendidikan_records.exists():
+            ak_pendidikan_total = sum([ak_pend.jumlah_angka_kredit for ak_pend in ak_pendidikan_records])
+            if include_pendidikan_filter or not selected_periods:
+                total_baru += ak_pendidikan_total
+                pendidikan_ak_item_display = {
+                    'id': 'pendidikan_ak',
+                    'tanggal_awal_penilaian': None,
+                    'periode_bulan': None,
+                    'penilaian': 'AK Pendidikan',
+                    'prosentase': None,
+                    'koefisien': None,
+                    'jumlah_angka_kredit': ak_pendidikan_total,
+                    'is_pendidikan_item': True,
+                }
+                # Insert after integrasi if present, otherwise at the beginning
+                insert_index = 1 if include_integrasi_filter or (not selected_periods and angka_integrasi_obj) else 0
+                ak_list_for_report.insert(insert_index, pendidikan_ak_item_display)
+
         # === TERAPKAN PENGURANGAN SESUAI GOLONGAN ===
         PENGURANGAN_GOLONGAN = {
             "III/a": 0,
@@ -725,7 +843,8 @@ def penetapan_view(request):
             max_tgl_akhir_filtered = None
             for item in ak_list_for_report:
                 is_integrasi = isinstance(item, dict) and item.get('is_integrasi_item', False)
-                if not is_integrasi:
+                is_pendidikan = isinstance(item, dict) and item.get('is_pendidikan_item', False)
+                if not is_integrasi and not is_pendidikan:
                     tanggal_awal = getattr(item, 'tanggal_awal_penilaian', None)
                     tanggal_akhir = getattr(item, 'tanggal_akhir_penilaian', None)
                     if not min_tgl_awal_filtered or (tanggal_awal and tanggal_awal < min_tgl_awal_filtered):
@@ -770,6 +889,7 @@ def penetapan_view(request):
         'report_data': report_data,
         'ak_list': ak_list_for_report,
         'selected_pegawai_id': int(pegawai_id) if pegawai_id else None,
+        'include_ak_pendidikan': include_ak_pendidikan,  # Pass the flag to template
     }
     return render(request, 'pegawai/penetapan.html', context)
 
@@ -777,16 +897,21 @@ def penetapan_pdf_view(request):
     pegawai_id = request.GET.get('pegawai_id')
     if not pegawai_id:
         return HttpResponse("Pegawai ID is required.", status=400)
-    
+
     selected_periods = request.GET.getlist('selected_periods')
+    include_ak_pendidikan_str = request.GET.get('include_ak_pendidikan', 'false')
+    include_ak_pendidikan = include_ak_pendidikan_str.lower() == 'true'
     pegawai = get_object_or_404(Pegawai, id=pegawai_id)
 
     selected_ak_ids = []
     include_integrasi_filter = False
+    include_pendidikan_filter = False
     if selected_periods:
         for p_id in selected_periods:
             if p_id == 'integrasi_ak':
                 include_integrasi_filter = True
+            elif p_id == 'pendidikan_ak':
+                include_pendidikan_filter = True
             else:
                 try:
                     selected_ak_ids.append(int(p_id))
@@ -797,8 +922,10 @@ def penetapan_pdf_view(request):
         selected_ak_ids = list(AK.objects.filter(pegawai=pegawai).values_list('id', flat=True))
         if AngkaIntegrasi.objects.filter(pegawai=pegawai).exists():
             include_integrasi_filter = True
+        if AkPendidikan.objects.filter(pegawai=pegawai).exists():
+            include_pendidikan_filter = True
 
-    report_data = _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filter)
+    report_data = _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filter, include_pendidikan_filter)
 
     context = {
         'report_data': report_data,
@@ -1033,17 +1160,60 @@ class AKDeleteView(DeleteView):
     success_url = reverse_lazy('ak_list')
 
 
-def _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filter):
+def ak_pendidikan_list(request):
+    # Get the search query from the GET parameters
+    search_query = request.GET.get('search', '')
+
+    # Start with all AkPendidikan objects, ordered by employee name in ascending order
+    ak_pendidikan_list = AkPendidikan.objects.select_related('pegawai', 'instansi', 'penilai').order_by('pegawai__nama')
+
+    # If there's a search query, filter by employee name
+    if search_query:
+        ak_pendidikan_list = ak_pendidikan_list.filter(pegawai__nama__icontains=search_query)
+
+    # Apply pagination
+    paginator = Paginator(ak_pendidikan_list, 5)  # Show 5 records per page
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'pegawai/ak_pendidikan_list.html', {
+        'page_obj': page_obj,
+        'search_query': search_query
+    })
+
+
+class AkPendidikanCreateView(CreateView):
+    model = AkPendidikan
+    form_class = AkPendidikanForm
+    template_name = 'pegawai/ak_pendidikan_form.html'
+    success_url = reverse_lazy('ak_pendidikan_list')
+
+
+class AkPendidikanUpdateView(UpdateView):
+    model = AkPendidikan
+    form_class = AkPendidikanForm
+    template_name = 'pegawai/ak_pendidikan_form.html'
+    success_url = reverse_lazy('ak_pendidikan_list')
+
+
+class AkPendidikanDeleteView(DeleteView):
+    model = AkPendidikan
+    template_name = 'pegawai/ak_pendidikan_confirm_delete.html'
+    success_url = reverse_lazy('ak_pendidikan_list')
+
+
+def _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filter, include_pendidikan_filter=False):
     # This is a simplified version of the logic in akumulasi_view
     ak_records_queryset = AK.objects.filter(pegawai=pegawai).order_by('tanggal_awal_penilaian')
-    
+
     if selected_ak_ids:
         ak_records_filtered = ak_records_queryset.filter(id__in=selected_ak_ids)
     else:
         ak_records_filtered = ak_records_queryset.all()
 
     latest_ak_unfiltered = AK.objects.filter(pegawai=pegawai).order_by('tanggal_akhir_penilaian').last()
-    
+
     latest_ak = ak_records_filtered.last() if ak_records_filtered.exists() else None
 
     tahun = datetime.now().year
@@ -1063,7 +1233,7 @@ def _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filte
 
     periode_awal_str, periode_akhir_str = '', ''
     ak_list_for_report = list(ak_records_filtered)
-    
+
     if ak_list_for_report:
         min_tgl_awal = min((ak.tanggal_awal_penilaian for ak in ak_list_for_report if hasattr(ak, 'tanggal_awal_penilaian') and ak.tanggal_awal_penilaian), default=None)
         max_tgl_akhir = max((ak.tanggal_akhir_penilaian for ak in ak_list_for_report if hasattr(ak, 'tanggal_akhir_penilaian') and ak.tanggal_akhir_penilaian), default=None)
@@ -1100,6 +1270,22 @@ def _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filte
             }
             ak_list_for_report.insert(0, integrasi_ak_item_display)
 
+    # Handle Ak Pendidikan
+    if include_pendidikan_filter:
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
+        if ak_pendidikan_records.exists():
+            ak_pendidikan_total = sum([ak_pend.jumlah_angka_kredit for ak_pend in ak_pendidikan_records])
+            total_angka_kredit += ak_pendidikan_total
+            pendidikan_ak_item_display = {
+                'penilaian': 'AK Pendidikan',
+                'jumlah_angka_kredit': ak_pendidikan_total,
+                'is_pendidikan_item': True,
+                'periode_bulan': None,
+            }
+            # Insert after integrasi if present, otherwise at the beginning
+            insert_index = 1 if include_integrasi_filter and angka_integrasi_obj else 0
+            ak_list_for_report.insert(insert_index, pendidikan_ak_item_display)
+
     return {
         'pegawai': pegawai,
         'ak_list': ak_list_for_report,
@@ -1116,9 +1302,9 @@ def _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filte
         'pangkat_penilai': latest_ak.penilai.pangkat if latest_ak and latest_ak.penilai else '',
         'golongan_penilai': latest_ak.penilai.golongan if latest_ak and latest_ak.penilai else '',
     }
-def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filter):
+def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filter, include_pendidikan_filter=False):
     ak_records_queryset = AK.objects.filter(pegawai=pegawai).order_by('tanggal_awal_penilaian')
-    
+
     if selected_ak_ids:
         ak_records_filtered = ak_records_queryset.filter(id__in=selected_ak_ids)
     else:
@@ -1169,6 +1355,22 @@ def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filte
             }
             ak_list_for_report.insert(0, integrasi_item)
 
+    # Tambahkan pendidikan jika diminta
+    ak_pendidikan_total = 0
+    if include_pendidikan_filter:
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
+        if ak_pendidikan_records.exists():
+            ak_pendidikan_total = sum([ak_pend.jumlah_angka_kredit for ak_pend in ak_pendidikan_records])
+            # NOTE: For penetapan report, pendidikan is shown in a separate row, not added to total_baru
+            pendidikan_item = {
+                'penilaian': 'AK Pendidikan',
+                'jumlah_angka_kredit': ak_pendidikan_total,
+                'is_pendidikan_item': True
+            }
+            # Insert after integrasi if present, otherwise at the beginning
+            insert_index = 1 if include_integrasi_filter and AngkaIntegrasi.objects.filter(pegawai=pegawai).exists() else 0
+            ak_list_for_report.insert(insert_index, pendidikan_item)
+
     # === TERAPKAN PENGURANGAN SESUAI GOLONGAN ===
     PENGURANGAN_GOLONGAN = {
         "III/a": 0,
@@ -1179,7 +1381,8 @@ def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filte
     pengurangan = PENGURANGAN_GOLONGAN.get(golongan, 0)
     total_baru = max(0.0, total_baru - pengurangan)  # Hindari nilai negatif
 
-    total_jumlah = total_lama + total_baru
+    # For penetapan report, total_jumlah includes ak_pendidikan_total if included
+    total_jumlah = total_lama + total_baru + (ak_pendidikan_total if include_pendidikan_filter else 0)
 
     # Hitung kenaikan pangkat
     next_golongan = "N/A"
@@ -1228,6 +1431,9 @@ def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filte
         'total_lama': total_lama,
         'total_baru': total_baru,          # <-- SUDAH DIKURANGI SESUAI ATURAN
         'total_jumlah': total_jumlah,
+        'ak_pendidikan_value': ak_pendidikan_total if include_pendidikan_filter else 0,
+        'total_performance_only': total_lama + total_baru,
+        'total_baru_with_pendidikan': total_baru + (ak_pendidikan_total if include_pendidikan_filter else 0),
         'pangkat_minimal': pangkat_minimal,
         'jenjang_minimal': jenjang_minimal,
         'hasil_pangkat': total_jumlah - pangkat_minimal,
@@ -1247,7 +1453,8 @@ def merge_report_view(request):
     report_generated = False
     all_ak_records_for_pegawai = []
     angka_integrasi_obj = None
-    
+    ak_pendidikan_records = []
+
     pegawai_id = request.POST.get('pegawai_id') or request.GET.get('pegawai_id')
     selected_periods = request.POST.getlist('selected_periods')
     start_date_str = request.POST.get('start_date')
@@ -1264,19 +1471,23 @@ def merge_report_view(request):
     # This is for retaining the state in the template
     selected_ak_ids_int = []
     include_angka_integrasi_from_post = False
+    include_ak_pendidikan_from_post = False
     for p_id in selected_periods:
         if p_id == 'integrasi_ak':
             include_angka_integrasi_from_post = True
+        elif p_id == 'pendidikan_ak':
+            include_ak_pendidikan_from_post = True
         else:
             try:
                 selected_ak_ids_int.append(int(p_id))
             except ValueError:
                 pass
-    
+
     if pegawai_id:
         pegawai = get_object_or_404(Pegawai, id=pegawai_id)
         all_ak_records_for_pegawai = AK.objects.filter(pegawai=pegawai).order_by('tanggal_awal_penilaian')
         angka_integrasi_obj = AngkaIntegrasi.objects.filter(pegawai=pegawai).first()
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
 
         if start_date and end_date:
             all_ak_records_for_pegawai = all_ak_records_for_pegawai.filter(
@@ -1285,19 +1496,22 @@ def merge_report_view(request):
             )
 
         if request.method == 'POST' and 'generate_report' in request.POST:
-            
+
             final_period_ids = selected_ak_ids_int
             include_integrasi = include_angka_integrasi_from_post
-            
+            include_pendidikan = include_ak_pendidikan_from_post
+
             # If nothing is selected, use all
             if not selected_periods:
                 final_period_ids = [ak.id for ak in all_ak_records_for_pegawai]
                 if angka_integrasi_obj:
                     include_integrasi = True
-            
-            konversi_report_data, konversi_ak_list = _get_konversi_report_data(pegawai, final_period_ids, include_integrasi)
-            akumulasi_data = _get_akumulasi_report_data(pegawai, final_period_ids, include_integrasi)
-            penetapan_data = _get_penetapan_report_data(pegawai, final_period_ids, include_integrasi)
+                if ak_pendidikan_records.exists():
+                    include_pendidikan = True
+
+            konversi_report_data, konversi_ak_list = _get_konversi_report_data(pegawai, final_period_ids, include_integrasi, include_pendidikan)
+            akumulasi_data = _get_akumulasi_report_data(pegawai, final_period_ids, include_integrasi, include_pendidikan)
+            penetapan_data = _get_penetapan_report_data(pegawai, final_period_ids, include_integrasi, include_pendidikan)
 
             report_data = {
                 'konversi': {
@@ -1314,6 +1528,8 @@ def merge_report_view(request):
     selected_ids_for_template = [str(i) for i in selected_ak_ids_int]
     if include_angka_integrasi_from_post:
         selected_ids_for_template.append('integrasi_ak')
+    if include_ak_pendidikan_from_post:
+        selected_ids_for_template.append('pendidikan_ak')
 
     context = {
         'pegawai_options': pegawai_options,
@@ -1321,6 +1537,7 @@ def merge_report_view(request):
         'report_data': report_data,
         'selected_pegawai_id': int(pegawai_id) if pegawai_id else None,
         'all_ak_records': all_ak_records_for_pegawai,
+        'ak_pendidikan_records': ak_pendidikan_records,
         'angka_integrasi_obj': angka_integrasi_obj,
         'selected_periods': selected_ids_for_template,
         'start_date': start_date,
@@ -1349,9 +1566,12 @@ def merge_report_pdf_view(request):
     # Process selected periods
     selected_ak_ids_int = []
     include_angka_integrasi = False
+    include_ak_pendidikan = False
     for p_id in selected_periods:
         if p_id == 'integrasi_ak':
             include_angka_integrasi = True
+        elif p_id == 'pendidikan_ak':
+            include_ak_pendidikan = True
         else:
             try:
                 selected_ak_ids_int.append(int(p_id))
@@ -1373,18 +1593,22 @@ def merge_report_pdf_view(request):
     # Determine final period IDs
     final_period_ids = selected_ak_ids_int
     include_integrasi = include_angka_integrasi
+    include_pendidikan = include_ak_pendidikan
 
     # If nothing is selected, use all
     if not selected_periods:
         final_period_ids = [ak.id for ak in all_ak_records_for_pegawai]
         angka_integrasi_obj = AngkaIntegrasi.objects.filter(pegawai=pegawai).first()
+        ak_pendidikan_records = AkPendidikan.objects.filter(pegawai=pegawai)
         if angka_integrasi_obj:
             include_integrasi = True
+        if ak_pendidikan_records.exists():
+            include_pendidikan = True
 
     # Generate data for all three reports
-    konversi_report_data, konversi_ak_list = _get_konversi_report_data(pegawai, final_period_ids, include_integrasi)
-    akumulasi_data = _get_akumulasi_report_data(pegawai, final_period_ids, include_integrasi)
-    penetapan_data = _get_penetapan_report_data(pegawai, final_period_ids, include_integrasi)
+    konversi_report_data, konversi_ak_list = _get_konversi_report_data(pegawai, final_period_ids, include_integrasi, include_pendidikan)
+    akumulasi_data = _get_akumulasi_report_data(pegawai, final_period_ids, include_integrasi, include_pendidikan)
+    penetapan_data = _get_penetapan_report_data(pegawai, final_period_ids, include_integrasi, include_pendidikan)
 
     report_data = {
         'konversi': {

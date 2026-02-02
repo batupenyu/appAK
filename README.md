@@ -2,6 +2,32 @@
 
 A Django application for managing employee credit scores (Angka Kredit Pegawai).
 
+## Local Development
+
+To run the application locally:
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Run migrations:
+```bash
+python manage.py migrate
+```
+
+3. Create a superuser (optional):
+```bash
+python manage.py createsuperuser
+```
+
+4. Start the development server:
+```bash
+python manage.py runserver
+```
+
+The application will be available at `http://127.0.0.1:8000/`.
+
 ## Deployment on Vercel
 
 This application is configured for deployment on Vercel.
@@ -18,6 +44,7 @@ Set these environment variables in your Vercel project settings:
 
 - `DJANGO_SECRET_KEY`: A secure secret key for Django
 - `DEBUG`: Set to `False` for production (default: `False`)
+- `ENVIRONMENT`: Set to `production` for production deployment
 - `DATABASE_URL`: PostgreSQL database URL (optional, will fallback to SQLite if not provided)
 - `DB_NAME`: Database name (for Supabase/PostgreSQL)
 - `DB_USER`: Database username (for Supabase/PostgreSQL)
@@ -34,21 +61,6 @@ Set these environment variables in your Vercel project settings:
    - Run database migrations
    - Collect static files
    - Deploy the application
-
-### Local Development
-
-To run locally:
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Run migrations
-python manage.py migrate
-
-# Start the development server
-python manage.py runserver
-```
 
 ### Notes
 

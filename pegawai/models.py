@@ -71,3 +71,25 @@ class AK(models.Model):
 
     def __str__(self):
         return f"{self.pegawai.nama} - {self.tanggal_awal_penilaian} to {self.tanggal_akhir_penilaian}"
+
+
+class AkPendidikan(models.Model):
+    """Model for Educational Credit Points (Angka Kredit Pendidikan)"""
+
+    pegawai = models.ForeignKey(Pegawai, on_delete=models.CASCADE, verbose_name="Pegawai")
+    instansi = models.ForeignKey(Instansi, on_delete=models.CASCADE, verbose_name="Instansi")
+    penilai = models.ForeignKey(Penilai, on_delete=models.CASCADE, verbose_name="Penilai")
+    tanggal_awal_penilaian = models.DateField(verbose_name="Tanggal Awal Penilaian")
+    tanggal_akhir_penilaian = models.DateField(verbose_name="Tanggal Akhir Penilaian")
+    jenis_kegiatan = models.CharField(max_length=255, verbose_name="Jenis Kegiatan Pendidikan")
+    tingkat = models.CharField(max_length=255, verbose_name="Tingkat Pendidikan", blank=True, null=True)
+    tanggal_pelaksanaan = models.DateField(verbose_name="Tanggal Pelaksanaan")
+    durasi_pelatihan = models.IntegerField(verbose_name="Durasi Pelatihan (Jam)", help_text="Durasi pelatihan dalam jam")
+    jumlah_angka_kredit = models.FloatField(verbose_name="Jumlah Angka Kredit")
+    tanggal_ditetapkan = models.DateField(verbose_name="Tanggal Ditentukan")
+    tempat_ditetapkan = models.CharField(max_length=255, verbose_name="Tempat Ditentukan")
+    nomor_sertifikat = models.CharField(max_length=255, verbose_name="Nomor Sertifikat", unique=True)
+    file_sertifikat = models.FileField(upload_to='sertifikat_pendidikan/', verbose_name="File Sertifikat", blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.pegawai.nama} - {self.jenis_kegiatan} ({self.tanggal_pelaksanaan})"

@@ -1,0 +1,157 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}{% if object %}Edit Ak Pendidikan{% else %}Tambah Ak Pendidikan Baru{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">{% if object %}Edit Ak Pendidikan{% else %}Tambah Ak Pendidikan Baru{% endif %}</h6>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.pegawai.id_for_label }}">Pegawai *</label>
+                    {{ form.pegawai }}
+                    {% if form.pegawai.errors %}
+                        <div class="text-danger">{{ form.pegawai.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.instansi.id_for_label }}">Instansi *</label>
+                    {{ form.instansi }}
+                    {% if form.instansi.errors %}
+                        <div class="text-danger">{{ form.instansi.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.penilai.id_for_label }}">Penilai *</label>
+                    {{ form.penilai }}
+                    {% if form.penilai.errors %}
+                        <div class="text-danger">{{ form.penilai.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.tanggal_awal_penilaian.id_for_label }}">Tanggal Awal Penilaian *</label>
+                        {{ form.tanggal_awal_penilaian }}
+                        {% if form.tanggal_awal_penilaian.errors %}
+                            <div class="text-danger">{{ form.tanggal_awal_penilaian.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.tanggal_akhir_penilaian.id_for_label }}">Tanggal Akhir Penilaian *</label>
+                        {{ form.tanggal_akhir_penilaian }}
+                        {% if form.tanggal_akhir_penilaian.errors %}
+                            <div class="text-danger">{{ form.tanggal_akhir_penilaian.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.jenis_kegiatan.id_for_label }}">Jenis Kegiatan Pendidikan *</label>
+                    {{ form.jenis_kegiatan }}
+                    {% if form.jenis_kegiatan.errors %}
+                        <div class="text-danger">{{ form.jenis_kegiatan.errors }}</div>
+                    {% endif %}
+                    {% if form.jenis_kegiatan.help_text %}
+                        <small class="form-text text-muted">{{ form.jenis_kegiatan.help_text }}</small>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.tingkat.id_for_label }}">Tingkat Pendidikan</label>
+                    {{ form.tingkat }}
+                    {% if form.tingkat.errors %}
+                        <div class="text-danger">{{ form.tingkat.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.tanggal_pelaksanaan.id_for_label }}">Tanggal Pelaksanaan *</label>
+                        {{ form.tanggal_pelaksanaan }}
+                        {% if form.tanggal_pelaksanaan.errors %}
+                            <div class="text-danger">{{ form.tanggal_pelaksanaan.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.durasi_pelatihan.id_for_label }}">Durasi Pelatihan (Jam) *</label>
+                        {{ form.durasi_pelatihan }}
+                        {% if form.durasi_pelatihan.errors %}
+                            <div class="text-danger">{{ form.durasi_pelatihan.errors }}</div>
+                        {% endif %}
+                        {% if form.durasi_pelatihan.help_text %}
+                            <small class="form-text text-muted">{{ form.durasi_pelatihan.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.jumlah_angka_kredit.id_for_label }}">Jumlah Angka Kredit *</label>
+                        {{ form.jumlah_angka_kredit }}
+                        {% if form.jumlah_angka_kredit.errors %}
+                            <div class="text-danger">{{ form.jumlah_angka_kredit.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.nomor_sertifikat.id_for_label }}">Nomor Sertifikat *</label>
+                        {{ form.nomor_sertifikat }}
+                        {% if form.nomor_sertifikat.errors %}
+                            <div class="text-danger">{{ form.nomor_sertifikat.errors }}</div>
+                        {% endif %}
+                        {% if form.nomor_sertifikat.help_text %}
+                            <small class="form-text text-muted">{{ form.nomor_sertifikat.help_text }}</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.tanggal_ditetapkan.id_for_label }}">Tanggal Ditentukan *</label>
+                        {{ form.tanggal_ditetapkan }}
+                        {% if form.tanggal_ditetapkan.errors %}
+                            <div class="text-danger">{{ form.tanggal_ditetapkan.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group col-md-6">
+                        <label for="{{ form.tempat_ditetapkan.id_for_label }}">Tempat Ditentukan *</label>
+                        {{ form.tempat_ditetapkan }}
+                        {% if form.tempat_ditetapkan.errors %}
+                            <div class="text-danger">{{ form.tempat_ditetapkan.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.file_sertifikat.id_for_label }}">File Sertifikat</label>
+                    {{ form.file_sertifikat }}
+                    {% if form.file_sertifikat.errors %}
+                        <div class="text-danger">{{ form.file_sertifikat.errors }}</div>
+                    {% endif %}
+                    {% if object.file_sertifikat %}
+                        <div class="mt-2">
+                            <p>File saat ini: <a href="{{ object.file_sertifikat.url }}" target="_blank">Lihat File</a></p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <a href="{% url 'ak_pendidikan_list' %}" class="btn btn-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

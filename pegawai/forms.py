@@ -1,5 +1,5 @@
 from django import forms
-from .models import AK, Pegawai, AngkaIntegrasi, Instansi, Penilai
+from .models import AK, Pegawai, AngkaIntegrasi, Instansi, Penilai, AkPendidikan
 from .constants import JENJANG_OPTIONS, PENILAIAN_OPTIONS, PENILAIAN_TO_PROSENTASE, JENJANG_TO_KOEFISIEN
 
 # Helper function to apply form-control class
@@ -25,7 +25,7 @@ class AKForm(forms.ModelForm):
             'tanggal_akhir_penilaian': forms.DateInput(attrs={'type': 'date'}),
             'tanggal_ditetapkan': forms.DateInput(attrs={'type': 'date'}),
         }
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
@@ -80,3 +80,25 @@ class PenilaiForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             apply_form_control(field)
+
+class AkPendidikanForm(forms.ModelForm):
+    class Meta:
+        model = AkPendidikan
+        fields = '__all__'
+        widgets = {
+            'tanggal_awal_penilaian': forms.DateInput(attrs={'type': 'date'}),
+            'tanggal_akhir_penilaian': forms.DateInput(attrs={'type': 'date'}),
+            'tanggal_pelaksanaan': forms.DateInput(attrs={'type': 'date'}),
+            'tanggal_ditetapkan': forms.DateInput(attrs={'type': 'date'}),
+            'file_sertifikat': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            apply_form_control(field)
+            # Add specific validation or help text for certain fields
+            if field_name == 'durasi_pelatihan':
+                field.help_text = "Durasi pelatihan dalam jam"
+            elif field_name == 'nomor_sertifikat':
+                field.help_text = "Nomor sertifikat harus unik"

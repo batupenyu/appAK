@@ -176,6 +176,15 @@
                         <td>-</td>
                         <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
                     </tr>
+                    {% elif ak_item.is_pendidikan_item %}
+                    <tr>
+                        <td class="text-center" >{{ ak_item.penilaian }}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                    </tr>
                     {% else %}
                     <tr>
                         <td class="text-center">{{ ak_item.tanggal_awal_penilaian.year }}</td>
