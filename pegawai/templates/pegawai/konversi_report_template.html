@@ -1,226 +1,303 @@
 <div class="card">
-    <style>
-        #report-content {
-            font-size: 11pt;
-            font-family: Arial, sans-serif;
-            line-height: 1.2;
-        }
-        .font-bold {
-            font-weight: bold;
-        }
+  <style>
+    #report-content {
+      font-size: 11pt;
+      font-family: Arial, sans-serif;
+      line-height: 1.2;
+    }
+    .font-bold {
+      font-weight: bold;
+    }
 
-        table.personal-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
-        }
+    table.personal-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
 
-        /* Header: 2 kolom visual, tapi struktur 4 kolom */
-        table.personal-table thead th {
-            border: 1px solid black;
-            border-bottom: 2px solid black;
-            padding: 2px 4px;
-            text-align: center;
-            vertical-align: middle;
-            font-weight: bold;
-        }
+    /* Header: 2 kolom visual, tapi struktur 4 kolom */
+    table.personal-table thead th {
+      border: 1px solid black;
+      border-bottom: 2px solid black;
+      padding: 2px 4px;
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+    }
 
-        /* Body cells: default horizontal borders */
-        table.personal-table tbody td {
-            padding: 2px 4px;
-            vertical-align: middle;
-            text-align: left;
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-        }
+    /* Body cells: default horizontal borders */
+    table.personal-table tbody td {
+      padding: 2px 4px;
+      vertical-align: middle;
+      text-align: left;
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }
 
-        /* Kolom nomor: border kiri, KANAN, atas, bawah */
-        table.personal-table tbody td.number-cell {
-            width: 5%;
-            text-align: center;
-            border-left: 1px solid black;
-            border-right: 1px solid black; /* ✅ INI YANG DITAMBAHKAN */
-        }
+    /* Kolom nomor: border kiri, KANAN, atas, bawah */
+    table.personal-table tbody td.number-cell {
+      width: 5%;
+      text-align: center;
+      border-left: 1px solid black;
+      border-right: 1px solid black; /* ✅ INI YANG DITAMBAHKAN */
+    }
 
-        /* Kolom label: HILANGKAN border kanan */
-        table.personal-table tbody td.label-cell {
-            width: 30%;
-            border-right: none;
-        }
+    /* Kolom label: HILANGKAN border kanan */
+    table.personal-table tbody td.label-cell {
+      width: 30%;
+      border-right: none;
+    }
 
-        /* Kolom colon: HILANGKAN border kiri & kanan */
-        table.personal-table tbody td.colon-merged {
-            width: 30px;
-            text-align: center;
-            padding: 2px 2px;
-            border-left: none;
-            border-right: none;
-        }
+    /* Kolom colon: HILANGKAN border kiri & kanan */
+    table.personal-table tbody td.colon-merged {
+      width: 30px;
+      text-align: center;
+      padding: 2px 2px;
+      border-left: none;
+      border-right: none;
+    }
 
-        /* Kolom nilai: HILANGKAN border kiri, TAPI pertahankan border kanan */
-        table.personal-table tbody td.value-cell {
-            width: 63%;
-            border-left: none;
-            border-right: 1px solid black;
-        }
+    /* Kolom nilai: HILANGKAN border kiri, TAPI pertahankan border kanan */
+    table.personal-table tbody td.value-cell {
+      width: 63%;
+      border-left: none;
+      border-right: 1px solid black;
+    }
 
-        /* Tabel angka kredit — tetap full border */
-        table.credit-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 16px;
-            table-layout: fixed;
-        }
-        table.credit-table th,
-        table.credit-table td {
-            border: 1px solid black;
-            padding: 2px 4px;
-            vertical-align: middle;
-            text-align: center;
-            word-wrap: break-word;
-        }
-        table.credit-table thead tr:first-child th {
-            border-bottom: 2px solid black;
-        }
+    /* Tabel angka kredit — tetap full border */
+    table.credit-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      table-layout: fixed;
+    }
+    table.credit-table th,
+    table.credit-table td {
+      border: 1px solid black;
+      padding: 2px 4px;
+      vertical-align: middle;
+      text-align: center;
+      word-wrap: break-word;
+    }
+    table.credit-table thead tr:first-child th {
+      border-bottom: 2px solid black;
+    }
 
-        /* Footer */
-        table.footer-table {
-            width: 100%;
-            border: none;
-            border-collapse: collapse;
-        }
-        .footer-left { width: 60%; }
-        .footer-right { width: 40%; }
-        .footer-right-content {
-            text-align: left;
-        }
+    /* Footer */
+    table.footer-table {
+      width: 100%;
+      border: none;
+      border-collapse: collapse;
+    }
+    .footer-left {
+      width: 60%;
+    }
+    .footer-right {
+      width: 40%;
+    }
+    .footer-right-content {
+      text-align: left;
+    }
 
-        /* Hide Font Awesome icons in PDF only */
-        @media print {
-            .fa, .fas, .far, .fal, .fad, .fab {
-                display: none !important;
-            }
-        }
+    /* Hide Font Awesome icons in PDF only */
+    @media print {
+      .fa,
+      .fas,
+      .far,
+      .fal,
+      .fad,
+      .fab {
+        display: none !important;
+      }
+    }
+  </style>
 
-    </style>
-
-    <div class="card-body">
-        <div id="report-content" class="p-3">
-            <!-- Judul & Nomor: CENTER -->
-            <div style="text-align: center; margin-bottom: 12px;">
-                <div class="font-bold" style="margin-bottom: 4px;">KONVERSI KE ANGKA KREDIT</div>
-                <div class="font-bold">
-                    NOMOR : 800/ ...... /......../Dindik/
-                    {% if report_data.tahun %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK
-                </div>
-            </div>
-
-            <!-- Instansi & Periode -->
-            <table style="width: 100%; border: none; font-size: 11pt;">
-                <tr>
-                    <td>Instansi: {{ report_data.nama_instansi }}</td>
-                    <td style="text-align: right;">
-                        Periode : {{ report_data.periode_awal_str }} s.d. {{ report_data.periode_akhir_str }}
-                    </td>
-                </tr>
-            </table>
-
-            <!-- Tabel Keterangan Perorangan -->
-            <table class="personal-table">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">I.</th>
-                        <th colspan="3" style="width: 95%;text-align: left;">KETERANGAN PERORANGAN</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td class="number-cell">1.</td><td class="label-cell">Nama</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.nama }}</td></tr>
-                    <tr><td class="number-cell">2.</td><td class="label-cell">NIP</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.nip }}</td></tr>
-                    <tr><td class="number-cell">3.</td><td class="label-cell">No. Seri Karpeg</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.no_seri_karpeg }}</td></tr>
-                    <tr><td class="number-cell">4.</td><td class="label-cell">Tempat Tgl. Lahir</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.tempat_lahir }}, {{ report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}</td></tr>
-                    <tr><td class="number-cell">5.</td><td class="label-cell">Jenis Kelamin</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.jenis_kelamin }}</td></tr>
-                    <tr><td class="number-cell">6.</td><td class="label-cell">Pangkat/Gol.Ruang/TMT</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}</td></tr>
-                    <tr><td class="number-cell">7.</td><td class="label-cell">Jabatan /TMT</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.jabatan_dan_tmt }}</td></tr>
-                    <tr><td class="number-cell">8.</td><td class="label-cell">Unit Kerja</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.pegawai.unit_kerja }}</td></tr>
-                    <tr><td class="number-cell">9.</td><td class="label-cell">Instansi</td><td class="colon-merged">:</td><td class="value-cell">{{ report_data.nama_instansi }}</td></tr>
-                </tbody>
-            </table>
-
-            <!-- Tabel Angka Kredit -->
-            <table class="credit-table">
-                <thead>
-                    <tr><td colspan="4">KONVERSI KE ANGKA KREDIT</td></tr>
-                    <tr>
-                        <td colspan="2">HASIL PENILAIAN KINERJA</td>
-                        <td rowspan="2">KOEFISIEN <br>PER TAHUN</td>
-                        <td rowspan="2">ANGKA KREDIT <br>YANG DI DAPAT</td>
-                    </tr>
-                    <tr>
-                        <th>PREDIKAT</th>
-                        <th>PROSENTASE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if report_data.include_angka_integrasi and report_data.angka_integrasi_value > 0 %}
-                    <tr>
-                        <td>AK Integrasi</td>
-                        <td>.</td>
-                        <td>.</td>
-                        <td>{{ report_data.angka_integrasi_value|floatformat:"2" }}</td>
-                    </tr>
-                    {% endif %}
-
-                    {% if report_data.include_ak_pendidikan and report_data.ak_pendidikan_value > 0 %}
-                    <tr>
-                        <td>AK Pendidikan</td>
-                        <td>.</td>
-                        <td>.</td>
-                        <td>{{ report_data.ak_pendidikan_value|floatformat:"2" }}</td>
-                    </tr>
-                    {% endif %}
-                    {% for ak_item in ak_list %}
-                    <tr>
-                        <td>{{ ak_item.penilaian }}</td>
-                        <td>{{ ak_item.prosentase }}%</td>
-                        <td>{{ ak_item.koefisien }}</td>
-                        <td>{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td colspan="3" style="text-align: right; padding-right: 8px; font-weight: bold;">Jumlah Angka Kredit</td>
-                        <td style="font-weight: bold;">{{ report_data.total_angka_kredit|floatformat:"2" }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            
-
-            <!-- Footer -->
-            <table class="footer-table">
-                <tr>
-                    <td class="footer-left">
-                        <p style="margin: 0 0 8px 0;"><strong>ASLI disampaikan dengan hormat kepada:</strong><br>
-                        Jabatan Fungsional yang bersangkutan.</p>
-                        <p style="margin: 0;"><strong>Tembusan disampaikan kepada:</strong><br>
-                        1. Jabatan Fungsional yang bersangkutan<br>
-                        2. Ketua/atasan unit kerja<br>
-                        3. Kepala Biro Kepegawaian dan Organisasi<br>
-                        4. Pejabat lain yang dianggap perlu.</p>
-                    </td>
-                    <td class="footer-right">
-                        <div class="footer-right-content">
-                            <div>Ditetapkan di {{ report_data.tempat_ditetapkan }}</div>
-                            <div>Pada tanggal, {{ report_data.tanggal_ditetapkan|date:"d-m-Y" }}.</div>
-                            <div style="margin-top: 10px;">Pejabat Penilai Kinerja</div>
-                            <div  style="margin-top: 40px;">
-                                {{ report_data.nama_penilai }}<br>
-                                {{ report_data.pangkat_penilai }}, {{ report_data.golongan_penilai }}<br>
-                                NIP. {{ report_data.nip_penilai }}
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+  <div class="card-body">
+    <div id="report-content" class="p-3">
+      <!-- Judul & Nomor: CENTER -->
+      <div style="text-align: center; margin-bottom: 12px">
+        <div class="font-bold" style="margin-bottom: 4px">
+          KONVERSI KE ANGKA KREDIT
         </div>
+        <div class="font-bold">
+          NOMOR : 800/ ......... /.........../Dindik/ {% if report_data.tahun
+          %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK
+        </div>
+      </div>
+
+      <!-- Instansi & Periode -->
+      <table style="width: 100%; border: none; font-size: 11pt">
+        <tr>
+          <td>Instansi: {{ report_data.nama_instansi }}</td>
+          <td style="text-align: right">
+            Periode : {{ report_data.periode_awal_str }} s.d. {{
+            report_data.periode_akhir_str }}
+          </td>
+        </tr>
+      </table>
+
+      <!-- Tabel Keterangan Perorangan -->
+      <table class="personal-table">
+        <thead>
+          <tr>
+            <th style="width: 5%">I.</th>
+            <th colspan="3" style="width: 95%; text-align: left">
+              KETERANGAN PERORANGAN
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="number-cell">1.</td>
+            <td class="label-cell">Nama</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.pegawai.nama }}</td>
+          </tr>
+          <tr>
+            <td class="number-cell">2.</td>
+            <td class="label-cell">NIP</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.pegawai.nip }}</td>
+          </tr>
+          <tr>
+            <td class="number-cell">3.</td>
+            <td class="label-cell">No. Seri Karpeg</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.pegawai.no_seri_karpeg }}</td>
+          </tr>
+          <tr>
+            <td class="number-cell">4.</td>
+            <td class="label-cell">Tempat Tgl. Lahir</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">
+              {{ report_data.pegawai.tempat_lahir }}, {{
+              report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}
+            </td>
+          </tr>
+          <tr>
+            <td class="number-cell">5.</td>
+            <td class="label-cell">Jenis Kelamin</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.pegawai.jenis_kelamin }}</td>
+          </tr>
+          <tr>
+            <td class="number-cell">6.</td>
+            <td class="label-cell">Pangkat/Gol.Ruang/TMT</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">
+              {{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan
+              }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}
+            </td>
+          </tr>
+          <tr>
+            <td class="number-cell">7.</td>
+            <td class="label-cell">Jabatan /TMT</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.jabatan_dan_tmt }}</td>
+          </tr>
+          <tr>
+            <td class="number-cell">8.</td>
+            <td class="label-cell">Unit Kerja</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.pegawai.unit_kerja }}</td>
+          </tr>
+          <tr>
+            <td class="number-cell">9.</td>
+            <td class="label-cell">Instansi</td>
+            <td class="colon-merged">:</td>
+            <td class="value-cell">{{ report_data.nama_instansi }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Tabel Angka Kredit -->
+      <table class="credit-table">
+        <thead>
+          <tr>
+            <td colspan="4">KONVERSI KE ANGKA KREDIT</td>
+          </tr>
+          <tr>
+            <td colspan="2">HASIL PENILAIAN KINERJA</td>
+            <td rowspan="2">KOEFISIEN <br />PER TAHUN</td>
+            <td rowspan="2">ANGKA KREDIT <br />YANG DI DAPAT</td>
+          </tr>
+          <tr>
+            <th>PREDIKAT</th>
+            <th>PROSENTASE</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if report_data.include_angka_integrasi and
+          report_data.angka_integrasi_value > 0 %}
+          <tr>
+            <td>AK Integrasi</td>
+            <td>.</td>
+            <td>.</td>
+            <td>{{ report_data.angka_integrasi_value|floatformat:"2" }}</td>
+          </tr>
+          {% endif %} {% if report_data.include_ak_pendidikan and
+          report_data.ak_pendidikan_value > 0 %}
+          <tr>
+            <td>AK Pendidikan</td>
+            <td>.</td>
+            <td>.</td>
+            <td>{{ report_data.ak_pendidikan_value|floatformat:"2" }}</td>
+          </tr>
+          {% endif %} {% for ak_item in ak_list %}
+          <tr>
+            <td>{{ ak_item.penilaian }}</td>
+            <td>{{ ak_item.prosentase }}%</td>
+            <td>{{ ak_item.koefisien }}</td>
+            <td>{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+          </tr>
+          {% endfor %}
+          <tr>
+            <td
+              colspan="3"
+              style="text-align: right; padding-right: 8px; font-weight: bold"
+            >
+              Jumlah Angka Kredit
+            </td>
+            <td style="font-weight: bold">
+              {{ report_data.total_angka_kredit|floatformat:"2" }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Footer -->
+      <table class="footer-table">
+        <tr>
+          <td class="footer-left">
+            <p style="margin: 0 0 8px 0">
+              <strong>ASLI disampaikan dengan hormat kepada:</strong><br />
+              Jabatan Fungsional yang bersangkutan.
+            </p>
+            <p style="margin: 0">
+              <strong>Tembusan disampaikan kepada:</strong><br />
+              1. Jabatan Fungsional yang bersangkutan<br />
+              2. Ketua/atasan unit kerja<br />
+              3. Kepala Biro Kepegawaian dan Organisasi<br />
+              4. Pejabat lain yang dianggap perlu.
+            </p>
+          </td>
+          <td class="footer-right">
+            <div class="footer-right-content">
+              <div>Ditetapkan di {{ report_data.tempat_ditetapkan }}</div>
+              <div>
+                Pada tanggal, {{ report_data.tanggal_ditetapkan|date:"d-m-Y" }}.
+              </div>
+              <div style="margin-top: 10px">Pejabat Penilai Kinerja</div>
+              <div style="margin-top: 40px">
+                {{ report_data.nama_penilai }}<br />
+                {{ report_data.pangkat_penilai }}, {{
+                report_data.golongan_penilai }}<br />
+                NIP. {{ report_data.nip_penilai }}
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
+  </div>
 </div>
