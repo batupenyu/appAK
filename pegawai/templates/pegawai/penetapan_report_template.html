@@ -296,13 +296,8 @@
           </tr>
           <tr>
             <td style="text-align: justify">
-              {% if report_data.hasil_pangkat > 0 %} Kelebihan/<span
-                style="text-decoration: line-through"
-                >Kekurangan</span
-              >
-              {% else %}
-              <span style="text-decoration: line-through">Kelebihan</span
-              >/Kekurangan {% endif %} *) Angka Kredit yang harus dicapai untuk
+              {% if report_data.hasil_pangkat > 0 %}Kelebihan/<span style="text-decoration: line-through">Kekurangan</span>
+              {% else %}<span style="text-decoration: line-through">Kelebihan</span>/Kekurangan{% endif %} *) Angka Kredit yang harus dicapai untuk
               kenaikan pangkat.
             </td>
             <td class="text-center">
@@ -312,13 +307,8 @@
           </tr>
           <tr>
             <td style="text-align: justify">
-              {% if report_data.hasil_jenjang > 0 %} Kelebihan/<span
-                style="text-decoration: line-through"
-                >Kekurangan</span
-              >
-              {% else %}
-              <span style="text-decoration: line-through">Kelebihan</span
-              >/Kekurangan {% endif %} *) Angka Kredit yang harus dicapai untuk
+              {% if report_data.hasil_jenjang > 0 %}Kelebihan/<span style="text-decoration: line-through">Kekurangan</span>
+              {% else %}<span style="text-decoration: line-through">Kelebihan</span>/Kekurangan{% endif %} *) Angka Kredit yang harus dicapai untuk
               kenaikan jenjang.
             </td>
             <td>-</td>
@@ -328,12 +318,7 @@
           </tr>
           <tr>
             <td colspan="3" class="text-justify" style="text-align: justify">
-              <b
-                ><i
-                  >{% if report_data.hasil_pangkat > 0 %}Dapat{% else %}Tidak
-                  dapat{% endif %}</i
-                ></b
-              >
+              <b><i>{% if report_data.hasil_pangkat > 0 %}Dapat{% else %}Tidak dapat{% endif %}</i></b>
               dipertimbangkan untuk kenaikan Pangkat/Jabatan setingkat lebih
               tinggi ke
               <b><i>{{ report_data.teks_tujuan }}</i></b>

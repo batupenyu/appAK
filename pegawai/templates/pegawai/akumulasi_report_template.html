@@ -123,8 +123,7 @@
           AKUMULASI ANGKA KREDIT
         </div>
         <div class="font-bold">
-          NOMOR : 800/ ........... /.........../Dindik/ {% if report_data.tahun
-          %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK
+          NOMOR : 800/ ........... /.........../Dindik/ {% if report_data.tahun %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK
         </div>
       </div>
 
@@ -133,8 +132,7 @@
         <tr>
           <td>Instansi: {{ report_data.nama_instansi }}</td>
           <td style="text-align: right">
-            Periode : {{ report_data.periode_awal_str }} s.d. {{
-            report_data.periode_akhir_str }}
+            Periode : {{ report_data.periode_awal_str }} s.d. {{ report_data.periode_akhir_str }}
           </td>
         </tr>
       </table>
@@ -173,8 +171,7 @@
             <td class="label-cell">Tempat Tgl. Lahir</td>
             <td class="colon-merged">:</td>
             <td class="value-cell">
-              {{ report_data.pegawai.tempat_lahir }}, {{
-              report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}
+              {{ report_data.pegawai.tempat_lahir }}, {{ report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}
             </td>
           </tr>
           <tr>
@@ -188,8 +185,7 @@
             <td class="label-cell">Pangkat/Gol.Ruang/TMT</td>
             <td class="colon-merged">:</td>
             <td class="value-cell">
-              {{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan
-              }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}
+              {{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}
             </td>
           </tr>
           <tr>
@@ -241,7 +237,8 @@
           </tr>
         </thead>
         <tbody>
-          {% for ak_item in ak_list %} {% if ak_item.is_integrasi_item %}
+          {% for ak_item in ak_list %}
+          {% if ak_item.is_integrasi_item %}
           <tr>
             <td class="text-center">{{ ak_item.penilaian }}</td>
             <td>-</td>
@@ -276,7 +273,8 @@
               {{ ak_item.jumlah_angka_kredit|floatformat:"2" }}
             </td>
           </tr>
-          {% endif %} {% endfor %}
+          {% endif %}
+          {% endfor %}
           <tr>
             <td colspan="5" class="text-right font-bold">
               Jumlah Angka Kredit
@@ -313,8 +311,7 @@
               <div style="margin-top: 10px">Pejabat Penilai Kinerja</div>
               <div style="margin-top: 40px">
                 {{ report_data.nama_penilai }}<br />
-                {{ report_data.pangkat_penilai }}, {{
-                report_data.golongan_penilai }}<br />
+                {{ report_data.pangkat_penilai }}, {{ report_data.golongan_penilai }}<br />
                 NIP. {{ report_data.nip_penilai }}
               </div>
             </div>

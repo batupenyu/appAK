@@ -120,8 +120,7 @@
           KONVERSI KE ANGKA KREDIT
         </div>
         <div class="font-bold">
-          NOMOR : 800/ ......... /.........../Dindik/ {% if report_data.tahun
-          %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK
+          NOMOR : 800/ ......... /.........../Dindik/ {% if report_data.tahun %}{{ report_data.tahun }}{% else %}TAHUN{% endif %}/PAK
         </div>
       </div>
 
@@ -130,8 +129,7 @@
         <tr>
           <td>Instansi: {{ report_data.nama_instansi }}</td>
           <td style="text-align: right">
-            Periode : {{ report_data.periode_awal_str }} s.d. {{
-            report_data.periode_akhir_str }}
+            Periode : {{ report_data.periode_awal_str }} s.d. {{ report_data.periode_akhir_str }}
           </td>
         </tr>
       </table>
@@ -170,8 +168,7 @@
             <td class="label-cell">Tempat Tgl. Lahir</td>
             <td class="colon-merged">:</td>
             <td class="value-cell">
-              {{ report_data.pegawai.tempat_lahir }}, {{
-              report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}
+              {{ report_data.pegawai.tempat_lahir }}, {{ report_data.pegawai.tanggal_lahir|date:"d-m-Y" }}
             </td>
           </tr>
           <tr>
@@ -185,8 +182,7 @@
             <td class="label-cell">Pangkat/Gol.Ruang/TMT</td>
             <td class="colon-merged">:</td>
             <td class="value-cell">
-              {{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan
-              }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}
+              {{ report_data.pegawai.pangkat }}, {{ report_data.pegawai.golongan }}, {{ report_data.pegawai.tmt_pangkat|date:"d-m-Y" }}
             </td>
           </tr>
           <tr>
@@ -227,23 +223,23 @@
           </tr>
         </thead>
         <tbody>
-          {% if report_data.include_angka_integrasi and
-          report_data.angka_integrasi_value > 0 %}
+          {% if report_data.include_angka_integrasi and report_data.angka_integrasi_value > 0 %}
           <tr>
             <td>AK Integrasi</td>
             <td>.</td>
             <td>.</td>
             <td>{{ report_data.angka_integrasi_value|floatformat:"2" }}</td>
           </tr>
-          {% endif %} {% if report_data.include_ak_pendidikan and
-          report_data.ak_pendidikan_value > 0 %}
+          {% endif %}
+{% if report_data.include_ak_pendidikan and report_data.ak_pendidikan_value > 0 %}
           <tr>
             <td>AK Pendidikan</td>
             <td>.</td>
             <td>.</td>
             <td>{{ report_data.ak_pendidikan_value|floatformat:"2" }}</td>
           </tr>
-          {% endif %} {% for ak_item in ak_list %}
+          {% endif %}
+          {% for ak_item in ak_list %}
           <tr>
             <td>{{ ak_item.penilaian }}</td>
             <td>{{ ak_item.prosentase }}%</td>
@@ -290,8 +286,7 @@
               <div style="margin-top: 10px">Pejabat Penilai Kinerja</div>
               <div style="margin-top: 40px">
                 {{ report_data.nama_penilai }}<br />
-                {{ report_data.pangkat_penilai }}, {{
-                report_data.golongan_penilai }}<br />
+                {{ report_data.pangkat_penilai }}, {{ report_data.golongan_penilai }}<br />
                 NIP. {{ report_data.nip_penilai }}
               </div>
             </div>
