@@ -256,8 +256,8 @@
               AK yang diperoleh dari peningkatan pendidikan
             </td>
             <td style="text-align: right">-</td>
-            <td style="text-align: right">{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
-            <td style="text-align: right">{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
+            <td style="text-align: right">{% if report_data.ak_pendidikan_value %}{{ report_data.ak_pendidikan_value|floatformat:"3" }}{% else %}-{% endif %}</td>
+            <td style="text-align: right">{% if report_data.ak_pendidikan_value %}{{ report_data.ak_pendidikan_value|floatformat:"3" }}{% else %}-{% endif %}</td>
             <td>-</td>
           </tr>
           <tr>
