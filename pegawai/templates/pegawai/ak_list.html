@@ -39,7 +39,7 @@
               {{ a.tanggal_awal_penilaian }} - {{ a.tanggal_akhir_penilaian }}
             </td>
             <td>{{ a.penilaian }}</td>
-            <td>{{ a.jumlah_angka_kredit|floatformat:2|default:"-" }}</td>
+            <td>{{ a.jumlah_angka_kredit|floatformat:3|default:"-" }}</td>
             <td>
               <a href="{% url 'ak_edit' a.pk %}" class="btn btn-sm btn-warning"
                 ><i class="fas fa-edit"></i

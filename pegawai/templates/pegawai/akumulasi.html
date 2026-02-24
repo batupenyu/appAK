@@ -174,7 +174,7 @@
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
-                            <td class="text-center" style="text-align: right; padding-right: 30px;">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                            <td class="text-center" style="text-align: right; padding-right: 30px;">{{ ak_item.jumlah_angka_kredit|floatformat:"3" }}</td>
                         </tr>
                         {% elif ak_item.is_pendidikan_item %}
                         <tr>
@@ -183,7 +183,7 @@
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
-                            <td class="text-center" style="text-align: right; padding-right: 30px;">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                            <td class="text-center" style="text-align: right; padding-right: 30px;">{{ ak_item.jumlah_angka_kredit|floatformat:"3" }}</td>
                         </tr>
                         {% else %}
                         <tr>
@@ -192,13 +192,13 @@
                             <td class="text-center">{{ ak_item.penilaian }}</td>
                             <td class="text-center">{{ ak_item.prosentase }}%</td>
                             <td class="text-center">{{ ak_item.koefisien }}</td>
-                            <td class="text-center" style="text-align: right; padding-right: 30px;">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                            <td class="text-center" style="text-align: right; padding-right: 30px;">{{ ak_item.jumlah_angka_kredit|floatformat:"3" }}</td>
                         </tr>
                         {% endif %}
                     {% endfor %}
                         <tr>
                             <td class="text-right font-bold" colspan="5" style="text-align: right;padding-right: 10px;">Jumlah Angka Kredit</td>
-                            <td class="text-center font-bold"style="text-align: right; padding-right: 30px;">{{ report_data.total_angka_kredit|floatformat:"2" }}</td>
+                            <td class="text-center font-bold"style="text-align: right; padding-right: 30px;">{{ report_data.total_angka_kredit|floatformat:"3" }}</td>
                         </tr>
                     </tbody>
                 </table>

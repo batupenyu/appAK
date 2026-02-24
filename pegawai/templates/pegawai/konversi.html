@@ -178,7 +178,7 @@
                             <td class="text-center" >AK Integrasi</td>
                             <td></td>
                             <td></td>
-                            <td class="text-center">{{ report_data.angka_integrasi_value|floatformat:"2" }}</td>
+                            <td class="text-center">{{ report_data.angka_integrasi_value|floatformat:"3" }}</td>
                         </tr>
                         {% endif %}
 
@@ -187,7 +187,7 @@
                             <td class="text-center" >AK Pendidikan</td>
                             <td></td>
                             <td></td>
-                            <td class="text-center">{{ report_data.ak_pendidikan_value|floatformat:"2" }}</td>
+                            <td class="text-center">{{ report_data.ak_pendidikan_value|floatformat:"3" }}</td>
                         </tr>
                         {% endif %}
                         {% for ak_item in ak_list %}
@@ -195,12 +195,12 @@
                                 <td class="text-center">{{ ak_item.penilaian }}</td>
                                 <td class="text-center">{{ ak_item.prosentase }}%</td>
                                 <td class="text-center">{{ ak_item.koefisien }}</td>
-                                <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"2" }}</td>
+                                <td class="text-center">{{ ak_item.jumlah_angka_kredit|floatformat:"3" }}</td>
                             </tr>
                         {% endfor %}
                         <tr>
                             <td colspan="3" class="text-right font-bold" style="text-align: right;">Jumlah Angka Kredit</td>
-                            <td class="text-center font-bold">{{ report_data.total_angka_kredit|floatformat:"2" }}</td>
+                            <td class="text-center font-bold">{{ report_data.total_angka_kredit|floatformat:"3" }}</td>
                         </tr>
                     </tbody>
                 </table>

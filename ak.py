@@ -1154,7 +1154,7 @@ def generate_akumulasi_html(data_pegawai, data_ak, include_angka_integrasi=False
                     <td style="text-align: center;">-</td>
                     <td style="text-align: center;"></td>
                     <td style="text-align: center;"></td>
-                    <td style="text-align: center;">{angka_integrasi_value:.2f}</td>
+                    <td style="text-align: center;">{angka_integrasi_value:.3f}</td>
                 </tr>
         """
     # Tambahkan data AK dari periode yang dipilih
@@ -1175,13 +1175,13 @@ def generate_akumulasi_html(data_pegawai, data_ak, include_angka_integrasi=False
                     <td style="text-align: center;">{row['penilaian']}</td>
                     <td style="text-align: center;">{row['prosentase']}%</td>
                     <td style="text-align: center;">{row['koefisien']}</td>
-                    <td style="text-align: center;">{ak_value:.2f}</td>
+                    <td style="text-align: center;">{ak_value:.3f}</td>
                 </tr>
         """
     html += f"""
                 <tr>
                     <td colspan="5" style="text-align: right; font-weight: bold;">Jumlah Angka Kredit</td>
-                    <td style="text-align: center; font-weight: bold;">{total_angka_kredit:.2f}</td>
+                    <td style="text-align: center; font-weight: bold;">{total_angka_kredit:.3f}</td>
                 </tr>
             </tbody>
         </table>
@@ -1406,7 +1406,7 @@ def generate_konversi_html(data_pegawai, data_ak, include_angka_integrasi=False,
                     <td style="text-align: center">{row['penilaian']}</td>
                     <td style="text-align: center">{row['prosentase']}%</td>
                     <td style="text-align: center">{row['koefisien']}</td>
-                    <td style="text-align: center">{row['jumlah_angka_kredit']:.2f}</td>
+                    <td style="text-align: center">{row['jumlah_angka_kredit']:.3f}</td>
                 </tr>
         """
     # Tambahkan baris Angka Integrasi jika dipilih
@@ -1417,13 +1417,13 @@ def generate_konversi_html(data_pegawai, data_ak, include_angka_integrasi=False,
                     <td style="text-align: center">AK Integrasi</td>
                     <td style="text-align: center"></td>
                     <td style="text-align: center"></td>
-                    <td style="text-align: center">{angka_integrasi_value:.2f}</td>
+                    <td style="text-align: center">{angka_integrasi_value:.3f}</td>
                 </tr>
         """
     html += f"""
                 <tr>
                     <td colspan="3" style="text-align: right; font-weight: bold;">Jumlah Angka Kredit</td>
-                    <td style="text-align: center; font-weight: bold;">{total_angka_kredit:.2f}</td>
+                    <td style="text-align: center; font-weight: bold;">{total_angka_kredit:.3f}</td>
                 </tr>
             </tbody>
         </table>

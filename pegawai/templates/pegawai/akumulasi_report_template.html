@@ -246,7 +246,7 @@
             <td>-</td>
             <td>-</td>
             <td class="text-center">
-              {{ ak_item.jumlah_angka_kredit|floatformat:"2" }}
+              {{ ak_item.jumlah_angka_kredit|floatformat:"3" }}
             </td>
           </tr>
           {% elif ak_item.is_pendidikan_item %}
@@ -257,7 +257,7 @@
             <td>-</td>
             <td>-</td>
             <td class="text-center">
-              {{ ak_item.jumlah_angka_kredit|floatformat:"2" }}
+              {{ ak_item.jumlah_angka_kredit|floatformat:"3" }}
             </td>
           </tr>
           {% else %}
@@ -270,7 +270,7 @@
             <td class="text-center">{{ ak_item.prosentase }}%</td>
             <td class="text-center">{{ ak_item.koefisien }}</td>
             <td class="text-center">
-              {{ ak_item.jumlah_angka_kredit|floatformat:"2" }}
+              {{ ak_item.jumlah_angka_kredit|floatformat:"3" }}
             </td>
           </tr>
           {% endif %}
@@ -280,7 +280,7 @@
               Jumlah Angka Kredit
             </td>
             <td class="text-center font-bold">
-              {{ report_data.total_angka_kredit|floatformat:"2" }}
+              {{ report_data.total_angka_kredit|floatformat:"3" }}
             </td>
           </tr>
         </tbody>
