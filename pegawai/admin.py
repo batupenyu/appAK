@@ -27,9 +27,9 @@ class AngkaIntegrasiAdmin(admin.ModelAdmin):
 
 @admin.register(AK)
 class AKAdmin(admin.ModelAdmin):
-    list_display = ('pegawai', 'tanggal_awal_penilaian', 'tanggal_akhir_penilaian', 'jumlah_angka_kredit', 'jenjang')
+    list_display = ('pegawai', 'tanggal_awal_penilaian', 'tanggal_akhir_penilaian', 'jumlah_angka_kredit', 'jenjang', 'Nomor_AK')
     list_filter = ('jenjang', 'penilaian', 'instansi', 'penilai')
-    search_fields = ('pegawai__nama', 'pegawai__nip', 'instansi__nama_instansi', 'penilai__nama')
+    search_fields = ('pegawai__nama', 'pegawai__nip', 'instansi__nama_instansi', 'penilai__nama', 'Nomor_AK')
     ordering = ('pegawai', 'tanggal_awal_penilaian')
 
 @admin.register(AkPendidikan)

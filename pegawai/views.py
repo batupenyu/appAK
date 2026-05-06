@@ -270,6 +270,7 @@ def _get_konversi_report_data(pegawai, ak_record_ids, include_integrasi, include
         'nip_penilai': latest_ak.penilai.nip if latest_ak and latest_ak.penilai else '',
         'pangkat_penilai': latest_ak.penilai.pangkat if latest_ak and latest_ak.penilai else '',
         'golongan_penilai': latest_ak.penilai.golongan if latest_ak and latest_ak.penilai else '',
+        'crud_angka_kredit': latest_ak.Nomor_AK if latest_ak and latest_ak.Nomor_AK else '',
     }
     return report_data, ak_list_for_report
 
@@ -353,6 +354,54 @@ def konversi_pdf_view(request):
     if pdf:
         return pdf
     return HttpResponse("Error generating PDF", status=500)
+
+
+def isi_nomor_ak_view(request):
+    pegawai_options = Pegawai.objects.all()
+    selected_pegawai = None
+    latest_ak = None
+    success_message = ""
+    error_message = ""
+
+    if request.method == 'POST':
+        pegawai_id = request.POST.get('pegawai_id')
+        nomor_ak = request.POST.get('nomor_ak', '').strip()
+
+        if pegawai_id:
+            try:
+                selected_pegawai = Pegawai.objects.get(id=pegawai_id)
+                # Get the latest AK record for this pegawai
+                latest_ak = AK.objects.filter(pegawai=selected_pegawai).order_by('tanggal_akhir_penilaian').last()
+
+                if latest_ak:
+                    latest_ak.Nomor_AK = nomor_ak
+                    latest_ak.save()
+                    success_message = f"Nomor AK berhasil disimpan untuk {selected_pegawai.nama}"
+                else:
+                    error_message = f"Pegawai {selected_pegawai.nama} belum memiliki data Angka Kredit. Silakan buat AK terlebih dahulu."
+            except Pegawai.DoesNotExist:
+                error_message = "Pegawai tidak ditemukan."
+        else:
+            error_message = "Silakan pilih pegawai terlebih dahulu."
+
+    # If GET with pegawai parameter, pre-load the pegawai and its latest AK
+    elif request.method == 'GET':
+        pegawai_id = request.GET.get('pegawai_id')
+        if pegawai_id:
+            try:
+                selected_pegawai = Pegawai.objects.get(id=pegawai_id)
+                latest_ak = AK.objects.filter(pegawai=selected_pegawai).order_by('tanggal_akhir_penilaian').last()
+            except Pegawai.DoesNotExist:
+                error_message = "Pegawai tidak ditemukan."
+
+    context = {
+        'pegawai_options': pegawai_options,
+        'selected_pegawai': selected_pegawai,
+        'latest_ak': latest_ak,
+        'success_message': success_message,
+        'error_message': error_message,
+    }
+    return render(request, 'pegawai/isi_nomor_ak.html', context)
 
 
 def akumulasi_view(request):
@@ -572,6 +621,7 @@ def akumulasi_view(request):
             'nip_penilai': latest_ak.penilai.nip if latest_ak and latest_ak.penilai else '',
             'pangkat_penilai': latest_ak.penilai.pangkat if latest_ak and latest_ak.penilai else '',
             'golongan_penilai': latest_ak.penilai.golongan if latest_ak and latest_ak.penilai else '',
+            'crud_angka_kredit': latest_ak.Nomor_AK if latest_ak and latest_ak.Nomor_AK else '',
         }
         report_generated = True
 
@@ -1306,6 +1356,7 @@ def _get_akumulasi_report_data(pegawai, selected_ak_ids, include_integrasi_filte
         'nip_penilai': latest_ak.penilai.nip if latest_ak and latest_ak.penilai else '',
         'pangkat_penilai': latest_ak.penilai.pangkat if latest_ak and latest_ak.penilai else '',
         'golongan_penilai': latest_ak.penilai.golongan if latest_ak and latest_ak.penilai else '',
+        'crud_angka_kredit': latest_ak.Nomor_AK if latest_ak and latest_ak.Nomor_AK else '',
     }
 def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filter, include_pendidikan_filter=False):
     ak_records_queryset = AK.objects.filter(pegawai=pegawai).order_by('tanggal_awal_penilaian')
@@ -1450,6 +1501,7 @@ def _get_penetapan_report_data(pegawai, selected_ak_ids, include_integrasi_filte
         'nip_penilai': latest_ak_unfiltered.penilai.nip if latest_ak_unfiltered and latest_ak_unfiltered.penilai else '',
         'pangkat_penilai': latest_ak_unfiltered.penilai.pangkat if latest_ak_unfiltered and latest_ak_unfiltered.penilai else '',
         'golongan_penilai': latest_ak_unfiltered.penilai.golongan if latest_ak_unfiltered and latest_ak_unfiltered.penilai else '',
+        'crud_angka_kredit': latest_ak_unfiltered.Nomor_AK if latest_ak_unfiltered and latest_ak_unfiltered.Nomor_AK else '',
     }
 
 def merge_report_view(request):

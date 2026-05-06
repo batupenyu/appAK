@@ -49,7 +49,7 @@ class AngkaIntegrasi(models.Model):
         return f"{self.pegawai.nama} - {self.jumlah_angka_integrasi}"
 
 class AK(models.Model):
-    
+
     pegawai = models.ForeignKey(Pegawai, on_delete=models.CASCADE)
     instansi = models.ForeignKey(Instansi, on_delete=models.CASCADE)
     penilai = models.ForeignKey(Penilai, on_delete=models.CASCADE)
@@ -62,6 +62,7 @@ class AK(models.Model):
     tanggal_ditetapkan = models.DateField()
     tempat_ditetapkan = models.CharField(max_length=255)
     jenjang = models.CharField(max_length=255)
+    Nomor_AK = models.CharField(max_length=255, blank=True, null=True, verbose_name="Nomor AK")
     # jumlah_angka_kredit = models.DecimalField(
     #     max_digits=10,
     #     decimal_places=3,

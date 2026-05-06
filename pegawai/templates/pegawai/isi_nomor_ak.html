@@ -1,0 +1,91 @@
+{% extends 'pegawai/base.html' %}
+
+{% block title %}Isi Nomor AK{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Isi Nomor AK</h3>
+    </div>
+    <div class="card-body">
+        {% if success_message %}
+        <div class="alert alert-success">
+            {{ success_message }}
+        </div>
+        {% endif %}
+
+        {% if error_message %}
+        <div class="alert alert-danger">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="pegawai_select" class="form-label">Pilih Pegawai:</label>
+                <select name="pegawai_id" id="pegawai_select" class="form-select" onchange="this.form.submit()" required>
+                    <option value="">-- Pilih Pegawai --</option>
+                    {% for p in pegawai_options %}
+                    <option value="{{ p.id }}" {% if selected_pegawai and selected_pegawai.id == p.id %}selected{% endif %}>
+                        {{ p.nama }} - {{ p.nip }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if selected_pegawai %}
+            <div class="mb-3">
+                <label for="nomor_ak" class="form-label">Nomor AK:</label>
+                <input 
+                    type="text" 
+                    name="nomor_ak" 
+                    id="nomor_ak" 
+                    class="form-control" 
+                    placeholder="Contoh: 800/III.2/2024/Dindik/"
+                    value="{{ latest_ak.Nomor_AK|default:'' }}"
+                    required
+                >
+                <div class="form-text">
+                    Format: 800/.........../.........../Dindik/{tahun}/PAK
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Simpan Nomor AK
+                </button>
+            </div>
+
+            {% if latest_ak %}
+            <div class="mt-4">
+                <h5>Info Data AK Terakhir:</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <th>Pegawai</th>
+                        <td>{{ selected_pegawai.nama }}</td>
+                    </tr>
+                    <tr>
+                        <th>NIP</th>
+                        <td>{{ selected_pegawai.nip }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tanggal Awal Penilaian</th>
+                        <td>{{ latest_ak.tanggal_awal_penilaian|date:"d-m-Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tanggal Akhir Penilaian</th>
+                        <td>{{ latest_ak.tanggal_akhir_penilaian|date:"d-m-Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nomor AK Saat Ini</th>
+                        <td>{{ latest_ak.Nomor_AK|default:"<span class='text-muted'>Belum diisi</span>"|safe }}</td>
+                    </tr>
+                </table>
+            </div>
+            {% endif %}
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -45,6 +45,7 @@ urlpatterns = [
     path('ak/new/', views.AKCreateView.as_view(), name='ak_new'),
     path('ak/edit/<int:pk>/', views.AKUpdateView.as_view(), name='ak_edit'),
     path('ak/delete/<int:pk>/', views.AKDeleteView.as_view(), name='ak_delete'),
+    path('isi-nomor-ak/', views.isi_nomor_ak_view, name='isi_nomor_ak'),
 
     # Ak Pendidikan URLs
     path('ak_pendidikan/', views.ak_pendidikan_list, name='ak_pendidikan_list'),
