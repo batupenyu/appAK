@@ -190,7 +190,8 @@ def _get_konversi_report_data(pegawai, ak_record_ids, include_integrasi, include
 
     ak_records_for_report_qs = ak_records_for_report_qs.order_by('tanggal_awal_penilaian')
 
-    latest_ak = ak_records_for_report_qs.last()
+    # Get the overall latest AK (unfiltered) to fetch Nomor_AK and other reference data
+    latest_ak = AK.objects.filter(pegawai=pegawai).order_by('tanggal_akhir_penilaian').last()
 
     tahun = datetime.now().year
     if latest_ak and latest_ak.tanggal_akhir_penilaian:
@@ -933,6 +934,7 @@ def penetapan_view(request):
             'nip_penilai': latest_ak_unfiltered.penilai.nip if latest_ak_unfiltered and latest_ak_unfiltered.penilai else '',
             'pangkat_penilai': latest_ak_unfiltered.penilai.pangkat if latest_ak_unfiltered and latest_ak_unfiltered.penilai else '',
             'golongan_penilai': latest_ak_unfiltered.penilai.golongan if latest_ak_unfiltered and latest_ak_unfiltered.penilai else '',
+            'crud_angka_kredit': latest_ak_unfiltered.Nomor_AK if latest_ak_unfiltered and latest_ak_unfiltered.Nomor_AK else '',
         }
         report_generated = True
 
