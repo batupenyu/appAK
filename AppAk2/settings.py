@@ -120,7 +120,7 @@ try:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME', 'postgres'),
             'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('ku3nSupabase', ''),
+            'PASSWORD': os.getenv('DB_PASSWORD', ''),
             'HOST': os.getenv('DB_HOST', 'qwpyagbdfmsxyoxanysx.supabase.co'),
             'PORT': os.getenv('DB_PORT', '443'),
             # 'OPTIONS': {

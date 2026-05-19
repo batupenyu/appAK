@@ -10,12 +10,7 @@ import os
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # Update ALLOWED_HOSTS for Vercel deployment
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '.vercel.app',  # Allow all Vercel domains
-    '.now.sh',      # Legacy Vercel domain pattern
-]
+ALLOWED_HOSTS = ['*']
 
 # Static files for Vercel
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
