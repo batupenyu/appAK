@@ -119,8 +119,6 @@ try:
         DATABASES['default'] = {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME', 'postgres'),
-            # 'USER': os.getenv('DB_USER', 'postgres'),
-            # 'USER': os.getenv('DB_USER', 'postgres.bcltnyhzcmhxdwlemsye.sessiondb.supabase.co'),
             'USER': os.getenv('DB_USER', 'postgres.bcltnyhzcmhxdwlemsye'),
             'PASSWORD': os.getenv('DB_PASSWORD', ''),
             'HOST': os.getenv('DB_HOST', 'aws-1-ap-northeast-1.pooler.supabase.com'),
