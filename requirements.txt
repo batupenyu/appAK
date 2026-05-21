@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 dj-database-url==2.3.0
 whitenoise==6.9.0
 python-dateutil==2.9.0
+vercel==0.5.8
