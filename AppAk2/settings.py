@@ -26,21 +26,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-)))w*k!ve%=n*ck9+=$!45#26@b4+=2+si_jtw5asj-)=8_8-j')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)  # Default to True for local development
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-# Update ALLOWED_HOSTS for local development
+# Update ALLOWED_HOSTS for local development and Vercel
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'nonidiomatical-teetotally-camron.ngrok-free.dev',
+    'app-ak.vercel.app',
+    '*.vercel.app',
+    '*',  # Allow all hosts (can be restrictive later)
 ]
-
-# For Vercel deployment, allow additional hosts
-if os.environ.get('ENVIRONMENT') == 'production':
-    ALLOWED_HOSTS.extend([
-        '.vercel.app',
-        '.now.sh',
-    ])
 
 # Application definition
 
@@ -108,33 +104,28 @@ DATABASES = {
 # Check if Supabase credentials are properly defined
 try:
     # Try to get the required Supabase configuration values
-    SUPABASE_DB_NAME = config('DB_NAME')
-    SUPABASE_DB_USER = config('DB_USER')
-    SUPABASE_DB_PASSWORD = config('DB_PASSWORD')
-    SUPABASE_DB_HOST = config('DB_HOST')
+    SUPABASE_DB_NAME = config('DB_NAME', default='')
+    SUPABASE_DB_USER = config('DB_USER', default='')
+    SUPABASE_DB_PASSWORD = config('DB_PASSWORD', default='')
+    SUPABASE_DB_HOST = config('DB_HOST', default='')
 
     # Check if any of the required values are empty
     if (SUPABASE_DB_NAME and SUPABASE_DB_USER and SUPABASE_DB_PASSWORD and SUPABASE_DB_HOST and not USE_SQLITE_FOR_MIGRATION):
         # If all required values exist and are not empty, update to PostgreSQL
         DATABASES['default'] = {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('DB_NAME', 'postgres'),
-            'USER': os.getenv('DB_USER', 'postgres'),
-            'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'db.gxzbgvefnarvsenkihwt.supabase.co'),
+            'NAME': SUPABASE_DB_NAME,
+            'USER': SUPABASE_DB_USER,
+            'PASSWORD': SUPABASE_DB_PASSWORD,
+            'HOST': SUPABASE_DB_HOST,
             'PORT': os.getenv('DB_PORT', '5432'),
             'OPTIONS': {
                 'sslmode': 'require',
             },
         }
-    else:
-        if not (SUPABASE_DB_NAME and SUPABASE_DB_USER and SUPABASE_DB_PASSWORD and SUPABASE_DB_HOST):
-            print("Warning: Supabase credentials not found or incomplete. Using SQLite for now.")
-            print("To use Supabase, please fill in your credentials in the .env file.")
-except UndefinedValueError:
-    # If any Supabase credential is not defined at all, keep SQLite
-    print("Warning: Supabase credentials not found or incomplete. Using SQLite for now.")
-    print("To use Supabase, please fill in your credentials in the .env file.")
+except Exception as e:
+    # If any error occurs, keep SQLite
+    pass
 
 # For Vercel deployment, allow DATABASE_URL environment variable
 if os.environ.get('DATABASE_URL'):
@@ -178,17 +169,25 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Changed to work with Vercel
+
+# Enable WhiteNoise for serving static files on Vercel
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files (user uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')  # Store user-uploaded media here
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Media file settings
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
+# CSRF settings for Vercel
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.now.sh',
+    'https://nonidiomatical-teetotally-camron.ngrok-free.dev',
+]
