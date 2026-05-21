@@ -122,17 +122,11 @@ try:
             'USER': os.getenv('DB_USER', 'postgres'),
             'PASSWORD': os.getenv('DB_PASSWORD', ''),
             'HOST': os.getenv('DB_HOST', 'qwpyagbdfmsxyoxanysx.supabase.co'),
-            'PORT': os.getenv('DB_PORT', '443'),
-            # 'OPTIONS': {
-            #     'sslmode': 'require',
-            #     'sslrootcert': os.path.join(BASE_DIR, 'ssl', 'prod-ca-2021.crt'),
-            # },
+            'PORT': os.getenv('DB_PORT', '5432'),
+            'OPTIONS': {
+                'sslmode': 'require',
+            },
         }
-        # Add SSL certificate path if specified
-        if config('DB_SSL_CERT_PATH', default=''):
-            if 'OPTIONS' not in DATABASES['default']:
-                DATABASES['default']['OPTIONS'] = {}
-            DATABASES['default']['OPTIONS']['sslcert'] = config('DB_SSL_CERT_PATH')
     else:
         if not (SUPABASE_DB_NAME and SUPABASE_DB_USER and SUPABASE_DB_PASSWORD and SUPABASE_DB_HOST):
             print("Warning: Supabase credentials not found or incomplete. Using SQLite for now.")
