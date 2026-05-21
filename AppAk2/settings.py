@@ -127,13 +127,8 @@ except Exception as e:
     # If any error occurs, keep SQLite
     pass
 
-# For Vercel deployment, allow DATABASE_URL environment variable
-if os.environ.get('DATABASE_URL'):
-    DATABASES['default'] = dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+# For Vercel deployment, use DB_* environment variables (preferred)
+# Don't use DATABASE_URL as it may contain pgbouncer options
 
 
 # Password validation
