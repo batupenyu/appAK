@@ -119,10 +119,10 @@ try:
         DATABASES['default'] = {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.getenv('DB_NAME', 'postgres'),
-            'USER': os.getenv('DB_USER', 'postgres.bcltnyhzcmhxdwlemsye'),
+            'USER': os.getenv('DB_USER', 'postgres'),
             'PASSWORD': os.getenv('DB_PASSWORD', ''),
-            'HOST': os.getenv('DB_HOST', 'aws-1-ap-northeast-1.pooler.supabase.com'),
-            'PORT': os.getenv('DB_PORT', '6543'),
+            'HOST': os.getenv('DB_HOST', 'db.gxzbgvefnarvsenkihwt.supabase.co'),
+            'PORT': os.getenv('DB_PORT', '5432'),
             'OPTIONS': {
                 'sslmode': 'require',
             },
@@ -178,26 +178,17 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Changed to work with Vercel
-
-# Enable WhiteNoise for serving static files on Vercel
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Media files (user uploads)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')  # Store user-uploaded media here
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CSRF settings for Vercel
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.vercel.app',
-    'https://*.now.sh',
-    'https://nonidiomatical-teetotally-camron.ngrok-free.dev',
-]
-
+# Media file settings
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
