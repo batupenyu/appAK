@@ -14,34 +14,19 @@ def render_to_pdf(template_src, context_dict=None):
         context_dict = {}
 
     try:
-        # Import xhtml2pdf if available
         from xhtml2pdf import pisa
-        from django.http import HttpResponse
+    except ImportError as e:
+        return HttpResponse(f"xhtml2pdf import error: {e}", status=500)
 
-        # Get the template
+    try:
         template = get_template(template_src)
-        # Render the template with the context
         html = template.render(context_dict)
-
-        # Create a PDF
         result = BytesIO()
-        # Use proper encoding and add options for better compatibility
         pdf = pisa.CreatePDF(html, dest=result, encoding='utf-8')
-
-        # Return the PDF if successful
         if not pdf.err:
             return HttpResponse(result.getvalue(), content_type='application/pdf')
-        else:
-            # Log the error for debugging
-            print(f"xhtml2pdf error: {pdf.err}")
-            return HttpResponse(f"Error generating PDF: {pdf.err}", status=500)
-    except ImportError:
-        # If xhtml2pdf is not installed, return an error
-        from django.http import HttpResponse
-        return HttpResponse("xhtml2pdf library is not installed. Install it using: pip install xhtml2pdf", status=500)
+        return HttpResponse(f"Error generating PDF: {pdf.err}", status=500)
     except Exception as e:
-        # Log the error for debugging
-        print(f"Error generating PDF: {str(e)}")
         import traceback
         traceback.print_exc()
         return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
