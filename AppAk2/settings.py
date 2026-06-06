@@ -91,19 +91,31 @@ WSGI_APPLICATION = 'AppAk2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# import os
+# from decouple import config, UndefinedValueError
+
+# USE_SQLITE_FOR_MIGRATION = os.environ.get('USE_SQLITE_FOR_MIGRATION', 'false').lower() == 'true'
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 import os
-from decouple import config, UndefinedValueError
+import dj_database_url
 
-# Check if we should use SQLite for initial migration
-USE_SQLITE_FOR_MIGRATION = os.environ.get('USE_SQLITE_FOR_MIGRATION', 'false').lower() == 'true'
-
-# Initialize DATABASES with SQLite as default
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
+        conn_max_age=600
+    )
 }
+
+
+
+
 
 # Check if Supabase credentials are properly defined
 try:
