@@ -1,0 +1,4 @@
+# Auto-detect correct port based on host
+# Direct connection (db.*) uses 5432
+# Pooler connection (pooler.*) uses 6543
+db_port = 5432 if 'db.' in SUPABASE_DB_HOST else 6543

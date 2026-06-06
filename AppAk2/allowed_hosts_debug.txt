@@ -1,0 +1,10 @@
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'nonidiomatical-teetotally-camron.ngrok-free.dev',
+    'app-ak.vercel.app',
+    '*.vercel.app',
+    '*',
+]
+
+DEBUG = True
