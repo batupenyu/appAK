@@ -9,7 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+# DEBUG = config('DEBUG', default=True, cast=bool)// Menggunakan config dengan default True, tapi tetap bisa diubah melalui environment variable
+
+# Menggunakan strip() untuk menghapus spasi tidak sengaja
+DEBUG = config('DEBUG', default='True').strip().lower() in ['true', '1', 'yes']
+
 
 # Allow Vercel domains and localhost
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'app-ak.vercel.app', '*.vercel.app', '*']
