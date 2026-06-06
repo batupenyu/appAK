@@ -4,6 +4,7 @@ Vercel WSGI handler for Django app.
 
 import os
 import sys
+import traceback  # WAJIB DITAMBAHKAN AGAR TIDAK NAMEERROR
 
 # 1. PAKSA VERCEL MEMBACA PATH INSTALASI MODUL LOKAL
 sys.path.append(os.path.join(os.path.dirname(__file__), '.vercel', 'path0', 'extmod'))
