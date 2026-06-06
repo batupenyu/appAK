@@ -49,10 +49,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AppAk2.wsgi.application'
 
+DB_DIR = '/tmp'
+os.makedirs(DB_DIR, exist_ok=True)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(DB_DIR, 'db.sqlite3'),
     }
 }
 
