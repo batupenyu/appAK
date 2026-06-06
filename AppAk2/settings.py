@@ -103,4 +103,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:*', 'https://*.vercel.app']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:*', 'https://*.vercel.app', 'https://*.ngrok-free.app', 'https://*.ngrok-free.dev']
