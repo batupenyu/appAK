@@ -2,23 +2,13 @@ import os
 from pathlib import Path
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('DJANGO_SECRET_KEY', default='django-insecure-key')
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = config('DEBUG', default=True, cast=bool)// Menggunakan config dengan default True, tapi tetap bisa diubah melalui environment variable
-
-# Menggunakan strip() untuk menghapus spasi tidak sengaja
-DEBUG = config('DEBUG', default='True').strip().lower() in ['true', '1', 'yes']
-
-
-# Allow Vercel domains and localhost
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'app-ak.vercel.app', '*.vercel.app', '*']
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,57 +49,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AppAk2.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# import os
-# import dj_database_url
-
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
-#         conn_max_age=600,
-#         ssl_require=True # Memaksa koneksi serverless Vercel menggunakan SSL ke Supabase
-#     )
-# }
-
-import os
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'postgres'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'Ku3npegawai'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
-
 try:
-    # Load Supabase credentials from environment
-    SUPABASE_DB_NAME = config('DB_NAME', default='')
-    SUPABASE_DB_USER = config('DB_USER', default='')
-    SUPABASE_DB_PASSWORD = config('DB_PASSWORD', default='')
-    SUPABASE_DB_HOST = config('DB_HOST', default='')
+    DB_NAME = config('DB_NAME', default='')
+    DB_USER = config('DB_USER', default='')
+    DB_PASSWORD = config('DB_PASSWORD', default='')
+    DB_HOST = config('DB_HOST', default='')
+    DB_PORT = config('DB_PORT', default='')
     USE_SQLITE_FOR_MIGRATION = config('USE_SQLITE_FOR_MIGRATION', default=False, cast=bool)
 
-    # Check if any of the required values are empty
-    if (SUPABASE_DB_NAME and SUPABASE_DB_USER and SUPABASE_DB_PASSWORD and SUPABASE_DB_HOST and not USE_SQLITE_FOR_MIGRATION):
-        # If all required values exist and are not empty, update to PostgreSQL
-        # Use port 5432 for direct connection (not pooler with 6543)
-        db_port = 5432 if 'db.' in SUPABASE_DB_HOST else 6543
+    if DB_NAME and DB_USER and DB_PASSWORD and DB_HOST and DB_PORT and not USE_SQLITE_FOR_MIGRATION:
         DATABASES['default'] = {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': SUPABASE_DB_NAME,
-            'USER': SUPABASE_DB_USER,
-            'PASSWORD': SUPABASE_DB_PASSWORD,
-            'HOST': SUPABASE_DB_HOST,
-            'PORT': db_port,
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+            'HOST': DB_HOST,
+            'PORT': DB_PORT,
             'OPTIONS': {
                 'sslmode': 'require',
                 'connect_timeout': 10,
@@ -117,11 +79,9 @@ try:
             },
             'CONN_MAX_AGE': 600,
         }
-except Exception as e:
-    # If any error occurs, keep SQLite
+except Exception:
     pass
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -129,20 +89,16 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CSRF settings for development
 CSRF_TRUSTED_ORIGINS = ['http://localhost:*', 'https://*.vercel.app']
