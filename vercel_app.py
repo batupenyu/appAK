@@ -1,6 +1,30 @@
 """
 Vercel WSGI handler for Django app.
 """
+
+import os
+import sys
+
+# 1. PAKSA VERCEL MEMBACA PATH INSTALASI MODUL LOKAL
+sys.path.append(os.path.join(os.path.dirname(__file__), '.vercel', 'path0', 'extmod'))
+sys.path.append(os.path.dirname(__file__))
+
+# 2. SETTING DEFAULT ENVIRONMENT VARIABLES
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'AppAk2.settings')
+
+# 3. PROSES INSIALISASI DJANGO
+try:
+    from django.core.wsgi import get_wsgi_application
+    application = get_wsgi_application()
+    app = application
+except ModuleNotFoundError as e:
+    # Fungsi _error_application Anda berada di sini sebagai fallback
+    def _error_application(environ, start_response):
+        # ... isi kode fungsi error html Anda ...
+        return [error_html]
+    app = _error_application
+
+
 import os
 import sys
 import traceback
