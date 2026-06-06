@@ -58,15 +58,31 @@ WSGI_APPLICATION = 'AppAk2.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# import os
+# import dj_database_url
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
+#         conn_max_age=600,
+#         ssl_require=True # Memaksa koneksi serverless Vercel menggunakan SSL ke Supabase
+#     )
+# }
+
 import os
-import dj_database_url
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{os.path.join(BASE_DIR, 'db.sqlite3')}",
-        conn_max_age=600,
-        ssl_require=True # Memaksa koneksi serverless Vercel menggunakan SSL ke Supabase
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'postgres'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'Ku3npegawai'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+    }
 }
 
 
