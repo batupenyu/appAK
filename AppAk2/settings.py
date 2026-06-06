@@ -49,7 +49,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'AppAk2.wsgi.application'
 
-DB_DIR = '/tmp'
+DB_DIR = '/tmp' if os.environ.get('VERCEL') else str(BASE_DIR)
 os.makedirs(DB_DIR, exist_ok=True)
 DATABASES = {
     'default': {
