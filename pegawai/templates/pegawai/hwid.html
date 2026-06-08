@@ -1,0 +1,30 @@
+{% extends "pegawai/base.html" %}
+{% block title %}Aktivasi - AppAK{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow border-warning">
+        <div class="card-header bg-warning text-dark text-center">
+          <h4 class="mb-0">⚠️ Aplikasi Belum Diaktivasi</h4>
+        </div>
+        <div class="card-body">
+          <p class="mb-1 text-center">Hardware ID mesin ini:</p>
+          <div class="alert alert-secondary text-center fs-5 fw-bold user-select-all" style="font-family:monospace; letter-spacing:2px;">
+            {{ hwid }}
+          </div>
+
+          <hr>
+          <p class="fw-semibold">Langkah aktivasi:</p>
+          <ol>
+            <li>Kirim kode Hardware ID di atas ke <strong>administrator</strong>.</li>
+            <li>Admin akan mengirimkan file <code>license.key</code>.</li>
+            <li>Copy file <code>license.key</code> ke folder yang sama dengan <code>AppAK.exe</code>.</li>
+            <li>Jalankan ulang <strong>AppAK.exe</strong>.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
