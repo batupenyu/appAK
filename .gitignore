@@ -49,3 +49,4 @@ staticfiles/
 ehthumbs.db
 Thumbs.db
 .vercel
+.aider*

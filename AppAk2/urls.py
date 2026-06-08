@@ -20,9 +20,11 @@ from django.views.generic import RedirectView
 from django.http import HttpResponse
 from django.conf import settings
 from django.conf.urls.static import static
+from pegawai.views import hwid_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('hwid/', hwid_view, name='hwid'),
     path('pegawai/', include('pegawai.urls')),
     path('favicon.ico', lambda req: HttpResponse(status=204)),
     path('', RedirectView.as_view(url='/pegawai/', permanent=True)),

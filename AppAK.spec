@@ -9,6 +9,8 @@ hiddenimports = (
     collect_submodules('django')
     + collect_submodules('pegawai')
     + collect_submodules('AppAk2')
+    + collect_submodules('reportlab')
+    + collect_submodules('xhtml2pdf')
     + [
         'django.contrib.admin',
         'django.contrib.auth',
@@ -23,6 +25,16 @@ hiddenimports = (
         'decouple',
         'xhtml2pdf',
         'reportlab',
+        'reportlab.graphics.barcode',
+        'reportlab.graphics.barcode.code128',
+        'reportlab.graphics.barcode.code39',
+        'reportlab.graphics.barcode.code93',
+        'reportlab.graphics.barcode.common',
+        'reportlab.graphics.barcode.qr',
+        'reportlab.graphics.barcode.usps',
+        'reportlab.graphics.barcode.usps4s',
+        'reportlab.graphics.barcode.eanbc',
+        'reportlab.graphics.barcode.widgets',
     ]
 )
 

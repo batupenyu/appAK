@@ -21,6 +21,14 @@ from .constants import (
 )
 
 
+def hwid_view(request):
+    """Tampilkan Hardware ID mesin ini."""
+    import uuid, hashlib
+    mac = uuid.getnode()
+    hwid = hashlib.sha256(f"AppAK-{mac}".encode()).hexdigest()[:32].upper()
+    return render(request, 'pegawai/hwid.html', {'hwid': hwid})
+
+
 def debug_base(request):
     """Test jika base.html berfungsi"""
     return render(request, 'pegawai/base.html', {'title': 'Test Page'})
