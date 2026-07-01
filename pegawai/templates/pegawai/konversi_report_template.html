@@ -84,9 +84,9 @@
 <body>
   <div style="text-align: center; margin-bottom: 12px">
     <div class="font-bold" style="margin-bottom: 4px">KONVERSI KE ANGKA KREDIT</div>
-    <div class="font-bold">
-      NOMOR : 800/ ......... /.........../ TAHUN /PAK
-    </div>
+<div class="font-bold">
+          NOMOR : {{ report_data.nomor_ak|default:"800/ ........... /.........../ TAHUN /PAK" }}
+        </div>
   </div>
 
   <table style="width: 100%; border: none; font-size: 11pt; margin-bottom: 8px;">

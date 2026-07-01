@@ -122,9 +122,9 @@
         <div class="font-bold" style="margin-bottom: 4px">
           AKUMULASI ANGKA KREDIT
         </div>
-         <div class="font-bold">
-           NOMOR : 800/ ........... /.........../ TAHUN /PAK
-         </div>
+<div class="font-bold">
+            NOMOR : {{ report_data.nomor_ak|default:"800/ ........... /.........../ TAHUN /PAK" }}
+          </div>
       </div>
 
       <!-- Instansi & Periode -->
